@@ -13,10 +13,10 @@ class User(db.Model, SerializerMixin):
     updated_at = db.Column(db.DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
 
     # Relationship with ScoreCards
-    scorecards = relationship("ScoreCard", back_populates="user")
+    scorecards = relationship("ScoreCard", back_populates="user", cascade="all, delete")
 
     # Relationship with PastRounds
-    past_rounds = relationship("PastRound", back_populates="user")
+    past_rounds = relationship("PastRound", back_populates="user", cascade="all, delete")
 
     # Relationship with ClubDistanceJoin
     club_distance_joins = relationship("ClubDistanceJoin", back_populates="user")
@@ -74,7 +74,7 @@ class Club(db.Model, SerializerMixin):
     # Foreign Key:
 
     # Relationship:
-    club_distance_joins = relationship("ClubDistanceJoin", back_populates="club")
+    club_distance_joins = relationship("ClubDistanceJoin", back_populates="club", cascade='all, delete-orphan')
 
     # Serialize Rules:
     serialize_rules = ('-club.club_distance_joins',)
@@ -90,7 +90,7 @@ class ClubDistance(db.Model, SerializerMixin):
     # Foreign Key:
 
     # Relationship:
-    club_distance_joins = relationship("ClubDistanceJoin", back_populates="club_distance")
+    club_distance_joins = relationship("ClubDistanceJoin", back_populates="club_distance", cascade='all, delete-orphan')
 
     # Serialize Rules:
     serialize_rules = ('-club.club_distance_joins',)
