@@ -36,7 +36,7 @@ function ScoreCardForm() {
 
   return (
     <div className="max-w-3xl mx-auto bg-green-800 p-6 rounded-lg shadow-lg">
-      <h2 className="text-center text-2xl font-bold mb-4" style={{ color: '#f8fafc' }}>Golf Scorecard</h2>
+      <h2 className="text-center text-2xl font-bold mb-4" style={{ color: '#f8fafc' }}>ForeScore: Scorecard</h2>
       <form onSubmit={handleFormSubmit}>
         <div className="mb-4">
           <label className="block text-slate-50 text-sm font-bold mb-2" htmlFor="date">
