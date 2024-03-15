@@ -36,6 +36,38 @@ def scorecard():
         response_body = jsonify({"error": "Invalid request method"})
         return make_response(response_body, 400)
 
+@app.route('/scorecard/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+def scorecard_id(id):
+    scorecard = ScoreCard.query.get(id)
+    if scorecard:
+        if request.method == 'GET':
+            response_body = jsonify(scorecard.to_dict(rules=('-user',)))
+            return make_response(response_body, 200)
+        elif request.method == 'PATCH':
+            request_body = request.get_json()
+            scorecard.date = request_body['date']
+            scorecard.course = request_body['course']
+            scorecard.par = request_body['par']
+            scorecard.score = request_body['score']
+            scorecard.fairway_hit = request_body['fairway_hit']
+            scorecard.green_in_regulation = request_body['green_in_regulation']
+            scorecard.putts = request_body['putts']
+            scorecard.total_score = request_body['total_score']
+            db.session.commit()
+            response_body = jsonify(scorecard.to_dict(rules=('-user',)))
+            return make_response(response_body, 200)
+        elif request.method == 'DELETE':
+            db.session.delete(scorecard)
+            db.session.commit()
+            response_body = jsonify({"message": "Successfully deleted scorecard"})
+            return make_response(response_body, 200)
+        else:
+            response_body = jsonify({"error": "Invalid request method"})
+            return make_response(response_body, 400)
+    else:
+        response_body = jsonify({"error": "Scorecard not found"})
+        return make_response(response_body, 404)
+    
 
 @app.route('/past_round', methods = ['GET'])
 def past_round():
