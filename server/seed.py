@@ -9,7 +9,7 @@ from models import db, User, ScoreCard, PastRound, Club, ClubDistance, ClubDista
 def seed_data():
     print('Seeding User...')
     # Create a user
-    user1 = User(username='user1', email='user1@example.com', password_hash='password1')
+    user1 = User(username='user1', email='user1@example.com', _password_hash='password1')
 
     # Create 5 scorecards for user1
     scorecard1 = ScoreCard(date='2024-03-14', course='Golf Course 1', par=72, score=78, fairway_hit='Yes', green_in_regulation='Yes', putts=30, total_score=78, user=user1)
@@ -24,6 +24,10 @@ def seed_data():
     past_round3 = PastRound(date='2024-03-12', course='Old Golf Course C', par=71, score=81, fairway_hit='Yes', green_in_regulation='Yes', putts=33, total_score=81, user=user1)
     past_round4 = PastRound(date='2024-03-13', course='Old Golf Course D', par=73, score=78, fairway_hit='Yes', green_in_regulation='Yes', putts=30, total_score=78, user=user1)
     past_round5 = PastRound(date='2024-03-14', course='Old Golf Course E', par=70, score=75, fairway_hit='Yes', green_in_regulation='Yes', putts=28, total_score=75, user=user1)
+
+    # Calculate average score for user1
+    user1_average_score = sum([scorecard.score for scorecard in user1.scorecards]) / len(user1.scorecards)
+    user1.average_score = user1_average_score
 
     # Create 5 clubs
     club1 = Club(name='Driver')

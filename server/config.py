@@ -6,15 +6,21 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
 from sqlalchemy import MetaData
+from flask_login import UserMixin, LoginManager, login_user, logout_user, login_required
 
 # Local imports
 
 # Instantiate app, set attributes
 app = Flask(__name__)
+
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.json.compact = False
+#Secret Key:
+app.config['SECRET_KEY'] = b'2\x88F\x83\xea2@A/\xb0(\xfd\x04\xe7[\xe4'
 
 # Define metadata, instantiate db
 metadata = MetaData(naming_convention={
@@ -23,6 +29,9 @@ metadata = MetaData(naming_convention={
 db = SQLAlchemy(metadata=metadata)
 migrate = Migrate(app, db)
 db.init_app(app)
+
+
+bcrypt = Bcrypt(app)
 
 # Instantiate REST API
 api = Api(app)

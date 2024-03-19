@@ -1,9 +1,14 @@
-from flask import Flask, request, make_response, jsonify
-from models import ScoreCard, PastRound  # Import your models
+from flask import Flask, request, make_response, jsonify, session
+from flask_restful import Resource
+from datetime import datetime
+ # Import your models
 from config import app, db, api 
 # Add your model imports
 from models import *
 # Views go here!
+
+#Secret Key:
+#app.secret_key = 'super secret key here!'
 @app.route('/')
 def index():
     return '<h1>Project Server</h1>'
@@ -134,7 +139,7 @@ def past_round_id(id):
 def club():
     if request.method == 'GET':
         clubs = Club.query.all()
-        clubs_dict = [club.to_dict(rules=('-club_distance_joins',)) for club in clubs]
+        clubs_dict = [club.to_dict(rules=('-club_distance_joins.user',)) for club in clubs]
         response_body = jsonify(clubs_dict)
         return make_response(response_body, 200)
     elif request.method == 'POST':
@@ -164,18 +169,18 @@ def club():
 
 
 
-@app.route('/club/<int:id>', methods = ['GET','PATCH', 'DELETE'])
+@app.route('/club/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def club_id(id):
     club = Club.query.get(id)
     if club:
         if request.method == 'GET':
-            response_body = jsonify(club.to_dict(rules = ('-club_distance_joins.user', )))
+            response_body = jsonify(club.to_dict(rules=('-club_distance_joins.user',)))
             return make_response(response_body, 200)
         elif request.method == 'PATCH':
             request_body = request.get_json()
             club.name = request_body['name']
             db.session.commit()
-            response_body = jsonify(club.to_dict(rules = ('-club_distance_joins', )))
+            response_body = jsonify(club.to_dict(rules=('-club_distance_joins',)))
             return make_response(response_body, 200)
         elif request.method == 'DELETE':
             db.session.delete(club)
@@ -188,7 +193,7 @@ def club_id(id):
     else:
         response_body = jsonify({"error": "Club not found"})
         return make_response(response_body, 404)
-        return response
+
     
 
 
@@ -243,6 +248,125 @@ def club_distance_id(id):
     else:
         response_body = jsonify({"error": "Club distance not found"})
         return make_response(response_body, 404)
+
+
+class Users(Resource):
+    
+    def get(self):
+        return make_response([user.to_dict(rules = ('-club_distance_joins', '-past_rounds', '-scorecards')) for user in User.query.all()], 200)        
+        
+api.add_resource(Users, '/users', endpoint='users')
+
+class UsersById(Resource):
+
+    def get(self, id):
+        user = User.query.filter(User.id == id).first()
+        if not user:
+            return make_response({'error': 'User not found'}, 404)
+        return make_response(user.to_dict(), 200)
+    
+    def patch(self, id):
+        user = User.query.filter(User.id == id).first()
+        if not user:
+            response_message = {'error': 'User not found'}
+            status = 404
+        else:
+            request_json = request.get_json()
+            try:
+                for k, v in request_json.items():
+                    setattr(user, k, v)
+                if 'password' in request_json.keys():
+                    user.password_hash = request_json['password']
+                db.session.commit()
+                response_message = user.to_dict()
+                status = 202
+            except Exception as e:
+                response_message = {'error': str(e)}
+                status = 422
+        return make_response(response_message, status)
+    
+    def delete(self, id):
+        user = User.query.filter(User.id == id).first()
+        if not user:
+            response_message = {'error': 'User not found'}
+            status = 404
+        else:
+            session['user_id'] = None
+            db.session.delete(user)
+            db.session.commit()
+            response_message = {}
+            status = 204
+        return make_response(response_message, status)
+
+api.add_resource(UsersById, '/users/<int:id>')
+
+class CheckSession(Resource):
+    
+    def get(self):
+        user = User.query.filter(User.id == session.get('user_id')).first()
+        if not user:
+            return make_response({'error': "Unauthorized: you must be logged in to make that request"}, 401)
+        else:
+            return make_response(user.to_dict(), 200)
+
+api.add_resource(CheckSession, '/check_session', endpoint='check_session')
+
+class Signup(Resource):
+    
+    def post(self):
+        json = request.get_json()
+        try:
+            user = User(
+                username=json['username'],
+            )
+            user.password_hash = json['password']
+            db.session.add(user)
+            db.session.commit()
+
+            session['user_id'] = user.id
+
+            return make_response(user.to_dict(), 201)
+
+        except Exception as e:
+            return make_response({'errors': str(e)}, 422)
+    
+api.add_resource(Signup, '/signup', endpoint='signup')
+
+class Login(Resource):
+
+    def post(self):
+        username = request.get_json()['username']
+
+        user = User.query.filter(User.username == username).first()
+        password = request.get_json()['password']
+
+        if not user:
+            response_body = {'error': 'User not found'}
+            status = 404
+        else:
+            if user.authenticate(password):
+                session['user_id'] = user.id
+                response_body = user.to_dict()
+                status = 200
+            else:
+                response_body = {'error': 'Invalid username or password'}
+                status = 401
+        return make_response(response_body, status)
+
+api.add_resource(Login, '/login', endpoint='login')
+
+class Logout(Resource):
+    
+    def delete(self):
+        session['user_id'] = None
+        return {}, 204
+    
+api.add_resource(Logout, '/logout', endpoint='logout')
+
+    
+        
+    
+
 
 
 

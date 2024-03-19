@@ -1,16 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { Switch, Route } from "react-router-dom";
-import ScoreCard from "./ScoreCard";
-import PastRound from "./PastRound";
+import React from "react";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import Authentication from "./Authentication";
+import Register from "./Register";
+
 
 function App() {
   return (
-    <div>
-     
-        <ScoreCard />
-         
-        
-    </div>
+    <Router>
+      <div>
+        <Switch>
+          <Route path="/register" component={Register} />
+          <Route path="/" component={Authentication} />
+        </Switch>
+      </div>
+    </Router>
   );
 }
 
