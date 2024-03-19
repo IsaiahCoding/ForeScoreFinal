@@ -253,7 +253,20 @@ def club_distance_id(id):
 class Users(Resource):
     
     def get(self):
-        return make_response([user.to_dict(rules = ('-club_distance_joins', '-past_rounds', '-scorecards')) for user in User.query.all()], 200)        
+        return make_response([user.to_dict(rules = ('-club_distance_joins', '-past_rounds', '-scorecards')) for user in User.query.all()], 200)  
+    
+    def post(self):
+        request_json = request.get_json()
+        try:
+            new_user = User(
+                username = request_json['username'],
+            )
+            new_user.password_hash = request_json['password']
+            db.session.add(new_user)
+            db.session.commit()
+            return make_response(new_user.to_dict(rules = ('-club_distance_joins', '-past_rounds', '-scorecards')), 201)
+        except Exception as e:
+            return make_response({'error': str(e)}, 422)      
         
 api.add_resource(Users, '/users', endpoint='users')
 

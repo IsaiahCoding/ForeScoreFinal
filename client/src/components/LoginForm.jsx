@@ -1,25 +1,35 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
-
-function Authentication() {
+function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
   const history = useHistory();
 
-  const handleLogin = async (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
-    const response = await fetch('/api/login', {
+    fetch('/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, username }),
+    })
+    .then((r) => {
+      if (r.ok) {
+        return r.json().then((user) => {
+          localStorage.setItem('token', user.token);
+          history.push('/scorecard');
+        });
+      } else {
+        // Handle error cases here
+        console.error('Failed to login');
+      }
+    })
+    .catch((error) => {
+      console.error('Error during login:', error);
     });
-    const data = await response.json();
-    if (data.status === 'ok') {
-      history.push('/dashboard');
-    }
   };
 
   return (
@@ -40,6 +50,13 @@ function Authentication() {
           onChange={(e) => setPassword(e.target.value)}
           className="w-full mb-4 px-4 py-2 rounded border border-gray-300 focus:outline-none focus:border-indigo-500 text-slate-950"
         />
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="w-full mb-4 px-4 py-2 rounded border border-gray-300 focus:outline-none focus:border-indigo-500 text-slate-950"
+        />
         <button
           type="submit"
           className="w-full bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 transition duration-200"
@@ -48,7 +65,7 @@ function Authentication() {
         </button>
         <br />
         <p className="mt-4 text-center text-sm text-gray-50">
-          Don't have an account? <a href="/register" className="text-indigo-500">Register</a>
+          Don't have an account? <a href="/signup" className="text-indigo-500">Signup</a>
         </p>
         <p className="text-center text-sm text-gray-50">
           Forgot your password? <a href="/reset" className="text-indigo-500">Reset</a>
@@ -58,4 +75,4 @@ function Authentication() {
   );
 }
 
-export default Authentication;
+export default Login;
