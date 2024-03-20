@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
-function PastRounds({ scorecardData: pastScorecardData, loggedInUser }) {
+function PastRounds({ scorecardData: pastScorecardData, loggedInUser, onAddScorecard }) {
   const [date, setDate] = useState('');
   const [golfCourse, setGolfCourse] = useState('');
   const [par, setPar] = useState('');
@@ -42,6 +42,8 @@ function PastRounds({ scorecardData: pastScorecardData, loggedInUser }) {
       });
       if (response.ok) {
         // Handle successful submission
+        const newScorecard = await response.json();
+        onAddScorecard(newScorecard); // Add new scorecard to scorecard state in App component
         history.push('/past_round');
       } else {
         // Handle submission failure

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useUser } from './UserContext/UserContext';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
   const history = useHistory();
+  const { user, setUser } = useUser();
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -19,11 +21,11 @@ function Login() {
     .then((r) => {
       if (r.ok) {
         return r.json().then((user) => {
-          localStorage.setItem('token', user.token);
+          setUser(email, password, username);
+          sessionStorage.setItem('user', JSON.stringify(email, password, username));
           history.push('/scorecard');
         });
       } else {
-        // Handle error cases here
         console.error('Failed to login');
       }
     })

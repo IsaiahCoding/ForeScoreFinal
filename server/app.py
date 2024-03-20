@@ -1,5 +1,5 @@
 from flask import Flask, request, make_response, jsonify, session
-from flask_restful import Resource
+from flask_restful import Resource, request
 from datetime import datetime
  # Import your models
 from config import app, db, api 
@@ -374,6 +374,10 @@ class Logout(Resource):
         session['user_id'] = None
         return {}, 204
     
+    def post(self):
+        session['user_id'] = None
+        return {}, 204
+
 api.add_resource(Logout, '/logout', endpoint='logout')
 
     
