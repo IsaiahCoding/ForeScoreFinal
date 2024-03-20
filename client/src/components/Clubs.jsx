@@ -30,26 +30,43 @@ function AddClubForm({ onAddClub }) {
     };
 
     return (
-        <div className="w-1/2">
-            <h2 className="text-xl font-bold mb-4">Add Club</h2>
+        <div className="max-w-md mx-auto bg-green-800 p-6 rounded-lg shadow-lg">
+            <h2 className="text-center text-2xl font-bold mb-4 text-gray-50">Add Club</h2>
             <form onSubmit={handleSubmit}>
-                <div className="mb-4">
-                    <label htmlFor="clubName" className="block mb-1">Club Name</label>
-                    <input type="text" id="clubName" value={clubName} onChange={(e) => setClubName(e.target.value)} className="w-full border rounded-md px-2 py-1" />
-                </div>
-                <div className="mb-4">
-                    <label htmlFor="regularDistance" className="block mb-1">Regular Distance</label>
-                    <input type="text" id="regularDistance" value={regularDistance} onChange={(e) => setRegularDistance(e.target.value)} className="w-full border rounded-md px-2 py-1" />
-                </div>
-                <div className="mb-4">
-                    <label htmlFor="maxDistance" className="block mb-1">Maximum Distance</label>
-                    <input type="text" id="maxDistance" value={maxDistance} onChange={(e) => setMaxDistance(e.target.value)} className="w-full border rounded-md px-2 py-1" />
-                </div>
-                <div className="mb-4">
-                    <label htmlFor="minDistance" className="block mb-1">Minimum Distance</label>
-                    <input type="text" id="minDistance" value={minDistance} onChange={(e) => setMinDistance(e.target.value)} className="w-full border rounded-md px-2 py-1" />
-                </div>
-                <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md">Add</button>
+                <input
+                    type="text"
+                    placeholder="Club Name"
+                    value={clubName}
+                    onChange={(e) => setClubName(e.target.value)}
+                    className="w-full mb-4 px-4 py-2 rounded border border-gray-300 focus:outline-none focus:border-indigo-500 text-slate-950"
+                />
+                <input
+                    type="text"
+                    placeholder="Regular Distance"
+                    value={regularDistance}
+                    onChange={(e) => setRegularDistance(e.target.value)}
+                    className="w-full mb-4 px-4 py-2 rounded border border-gray-300 focus:outline-none focus:border-indigo-500 text-slate-950"
+                />
+                <input
+                    type="text"
+                    placeholder="Maximum Distance"
+                    value={maxDistance}
+                    onChange={(e) => setMaxDistance(e.target.value)}
+                    className="w-full mb-4 px-4 py-2 rounded border border-gray-300 focus:outline-none focus:border-indigo-500 text-slate-950"
+                />
+                <input
+                    type="text"
+                    placeholder="Minimum Distance"
+                    value={minDistance}
+                    onChange={(e) => setMinDistance(e.target.value)}
+                    className="w-full mb-4 px-4 py-2 rounded border border-gray-300 focus:outline-none focus:border-indigo-500 text-slate-950"
+                />
+                <button
+                    type="submit"
+                    className="w-full bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 transition duration-200"
+                >
+                    Add
+                </button>
             </form>
         </div>
     );
@@ -143,78 +160,74 @@ function Clubs() {
     return (
         <div className="flex">
             <AddClubForm onAddClub={handleAddClub} /> {/* Add Club Form component */}
-            <div className="ml-4">
-                <h1 className="text-2xl font-bold mb-4">Clubs</h1>
+            <div>
+                <h1>Clubs</h1>
                 <div className="grid grid-cols-1 gap-4">
                     {clubs.map((club) => (
-                        <div key={club.id} className="bg-white shadow-md rounded-md p-4">
+                        <div key={club.id} className="max-w-md mx-auto bg-green-800 p-6 rounded-lg shadow-lg">
                             {editingClubId === club.id ? (
                                 <div>
-                                    <div className="mb-4">
-                                        <label htmlFor="clubName" className="block mb-1">Club Name:</label>
-                                        <input
-                                            type="text"
-                                            id="clubName"
-                                            name="clubName"
-                                            value={editedClub.clubName}
-                                            onChange={handleInputChange}
-                                            className="w-full border rounded-md px-2 py-1"
-                                        />
-                                    </div>
-                                    <div className="mb-4">
-                                        <label htmlFor="regularDistance" className="block mb-1">Regular Distance:</label>
-                                        <input
-                                            type="text"
-                                            id="regularDistance"
-                                            name="regularDistance"
-                                            value={editedClub.regularDistance}
-                                            onChange={handleInputChange}
-                                            className="w-full border rounded-md px-2 py-1"
-                                        />
-                                    </div>
-                                    <div className="mb-4">
-                                        <label htmlFor="maxDistance" className="block mb-1">Maximum Distance:</label>
-                                        <input
-                                            type="text"
-                                            id="maxDistance"
-                                            name="maxDistance"
-                                            value={editedClub.maxDistance}
-                                            onChange={handleInputChange}
-                                            className="w-full border rounded-md px-2 py-1"
-                                        />
-                                    </div>
-                                    <div className="mb-4">
-                                        <label htmlFor="minDistance" className="block mb-1">Minimum Distance:</label>
-                                        <input
-                                            type="text"
-                                            id="minDistance"
-                                            name="minDistance"
-                                            value={editedClub.minDistance}
-                                            onChange={handleInputChange}
-                                            className="w-full border rounded-md px-2 py-1"
-                                        />
-                                    </div>
-                                    <button onClick={handleSaveEdit} className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2">Save</button>
-                                    <button onClick={() => setEditingClubId(null)} className="bg-gray-400 text-white px-4 py-2 rounded-md">Cancel</button>
+                                    <label htmlFor="clubName" className="block mb-1 text-white font-bold">Club Name:</label>
+                                    <input
+                                        type="text"
+                                        id="clubName"
+                                        name="clubName"
+                                        value={editedClub.clubName}
+                                        onChange={handleInputChange}
+                                        className="w-full mb-4 px-4 py-2 rounded border border-gray-300 focus:outline-none focus:border-indigo-500 text-slate-950"
+                                    />
+                                    <label htmlFor="regularDistance" className="block mb-1 text-white font-bold">Regular Distance:</label>
+                                    <input
+                                        type="text"
+                                        id="regularDistance"
+                                        name="regularDistance"
+                                        value={editedClub.regularDistance}
+                                        onChange={handleInputChange}
+                                        className="w-full mb-4 px-4 py-2 rounded border border-gray-300 focus:outline-none focus:border-indigo-500 text-slate-950"
+                                    />
+                                    <label htmlFor="maxDistance" className="block mb-1 text-white font-bold">Maximum Distance:</label>
+                                    <input
+                                        type="text"
+                                        id="maxDistance"
+                                        name="maxDistance"
+                                        value={editedClub.maxDistance}
+                                        onChange={handleInputChange}
+                                        className="w-full mb-4 px-4 py-2 rounded border border-gray-300 focus:outline-none focus:border-indigo-500 text-slate-950"
+                                    />
+                                    <label htmlFor="minDistance" className="block mb-1 text-white font-bold">Minimum Distance:</label>
+                                    <input
+                                        type="text"
+                                        id="minDistance"
+                                        name="minDistance"
+                                        value={editedClub.minDistance}
+                                        onChange={handleInputChange}
+                                        className="w-full mb-4 px-4 py-2 rounded border border-gray-300 focus:outline-none focus:border-indigo-500 text-slate-950"
+                                    />
+
+                                    <button
+                                        onClick={handleSaveEdit}
+                                        className="w-full bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 transition duration-200"
+                                    >
+                                        Save
+                                    </button>
                                 </div>
                             ) : (
                                 <div>
-                                    <p className="font-semibold mb-1">Club Name: {club.clubName}</p>
-                                    <p className="mb-1">Regular Distance: {club.regularDistance}</p>
-                                    <p className="mb-1">Maximum Distance: {club.maxDistance}</p>
-                                    <p className="mb-1">Minimum Distance: {club.minDistance}</p>
-                                    <button onClick={() => handleEditClub(club.id)} className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2">Edit</button>
-                                    <button onClick={() => handleDeleteClub(club.id)} className="bg-red-500 text-white px-4 py-2 rounded-md">Delete</button>
+                                    <p><strong>Club Name:</strong> {club.clubName}</p>
+                                    <p><strong>Regular Distance:</strong> {club.regularDistance}</p>
+                                    <p><strong>Maximum Distance:</strong> {club.maxDistance}</p>
+                                    <p><strong>Minimum Distance:</strong> {club.minDistance}</p>
+                                    <button onClick={() => handleEditClub(club.id)} className="w-full bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 transition duration-200">Edit</button>
+                                    <button onClick={() => handleDeleteClub(club.id)} className="w-full bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 transition duration-200">Delete</button>
                                 </div>
                             )}
                         </div>
                     ))}
                 </div>
-                <h1 className="text-2xl font-bold mt-8 mb-4">Club Distances</h1>
                 <ul>
                     {clubDistances.map((club) => (
-                        <li key={club.club_id} className="mb-2">
-                            <Link to={`/club_distance/${club.club_id}`} className="text-blue-500 hover:underline">{club.club_name}</Link>
+                        <li key={club.club_id}>
+                            <Link to={`/club_distance/${club.club_id}`}>{club.club_name}</Link>
                         </li>
                     ))}
                 </ul>
@@ -225,3 +238,4 @@ function Clubs() {
 
 export default Clubs;
 
+                                       

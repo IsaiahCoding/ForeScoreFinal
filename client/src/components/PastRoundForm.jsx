@@ -1,221 +1,115 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { useUser } from './UserContext/UserContext';
 
-// Add Club Form component
-function AddClubForm({ onAddClub }) {
-    // State for form inputs
-    const [clubName, setClubName] = useState('');
-    const [regularDistance, setRegularDistance] = useState('');
-    const [maxDistance, setMaxDistance] = useState('');
-    const [minDistance, setMinDistance] = useState('');
+function PastRoundForm() {
+    const [date, setDate] = useState('');
+    const [golfCourse, setGolfCourse] = useState('');
+    const [par, setPar] = useState([]);
+    const [score, setScore] = useState([]);
+    const [scorecard, setScorecard] = useState([]);
 
-    // Form submission handler
+    useEffect(() => {
+        fetch('/api/scorecard')
+            .then(res => res.json())
+            .then(data => setScorecard(data));
+    }, []);
+
+    const handleEditClick = (id) => {
+        const updatedScorecard = scorecard.map((item) => {
+            if (item.id === id) {
+                return { ...item, date, golfCourse, par, score };
+            }
+            return item;
+        });
+
+        fetch(`/scorecard/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ date, golfCourse, par, score })
+        })
+        .then((res) => {
+            if (!res.ok) {
+                throw new Error('Failed to update scorecard');
+            }
+            return res.json();
+        })
+        .then(() => setScorecard(updatedScorecard))
+        .catch(error => console.error('Error updating scorecard:', error));
+    };
+
+    const handleDeleteClick = (id) => {
+        fetch(`/scorecard/${id}`, {
+            method: 'DELETE'
+        })
+        .then(() => {
+            const updatedScorecard = scorecard.filter((item) => item.id !== id);
+            setScorecard(updatedScorecard);
+        })
+        .catch(error => console.error('Error deleting scorecard:', error));
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Logic to submit form data
-        const newClub = {
-            clubName,
-            regularDistance,
-            maxDistance,
-            minDistance
-        };
-        // Call the onAddClub function passed from parent component
-        onAddClub(newClub);
-        // Reset form inputs after submission
-        setClubName('');
-        setRegularDistance('');
-        setMaxDistance('');
-        setMinDistance('');
+        fetch('/api/scorecard', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ date, golfCourse, par, score })
+        })
+        .then(res => res.json())
+        .then(data => {
+            setScorecard([...scorecard, data]);
+            setDate('');
+            setGolfCourse('');
+            setPar([]);
+            setScore([]);
+        })
+        .catch(error => console.error('Error creating scorecard:', error));
     };
 
     return (
-        <div className="w-1/2">
-            <h2 className="text-xl font-bold mb-4">Add Club</h2>
+        <div>
             <form onSubmit={handleSubmit}>
-                <div className="mb-4">
-                    <label htmlFor="clubName" className="block mb-1 text-white">Club Name</label>
-                    <input type="text" id="clubName" value={clubName} onChange={(e) => setClubName(e.target.value)} className="w-full border rounded-md px-2 py-1" />
-                </div>
-                <div className="mb-4">
-                    <label htmlFor="regularDistance" className="block mb-1 text-white">Regular Distance</label>
-                    <input type="text" id="regularDistance" value={regularDistance} onChange={(e) => setRegularDistance(e.target.value)} className="w-full border rounded-md px-2 py-1" />
-                </div>
-                <div className="mb-4">
-                    <label htmlFor="maxDistance" className="block mb-1 text-white">Maximum Distance</label>
-                    <input type="text" id="maxDistance" value={maxDistance} onChange={(e) => setMaxDistance(e.target.value)} className="w-full border rounded-md px-2 py-1" />
-                </div>
-                <div className="mb-4">
-                    <label htmlFor="minDistance" className="block mb-1 text-white">Minimum Distance</label>
-                    <input type="text" id="minDistance" value={minDistance} onChange={(e) => setMinDistance(e.target.value)} className="w-full border rounded-md px-2 py-1" />
-                </div>
-                <button type="submit" className="bg-green-950 text-white px-4 py-2 rounded-md">Add</button>
+                <label>Date:</label>
+                <input type="date" value={date} onChange={(e) => setDate(e.target.value)} /><br />
+                <label>Golf Course:</label>
+                <input type="text" value={golfCourse} onChange={(e) => setGolfCourse(e.target.value)} /><br />
+                <label>Par:</label>
+                {par.map((p, index) => (
+                    <input key={index} type="number" value={p} onChange={(e) => {
+                        const newPar = [...par];
+                        newPar[index] = e.target.value;
+                        setPar(newPar);
+                    }} />
+                ))}
+                <br />
+                <label>Score:</label>
+                {score.map((s, index) => (
+                    <input key={index} type="number" value={s} onChange={(e) => {
+                        const newScore = [...score];
+                        newScore[index] = e.target.value;
+                        setScore(newScore);
+                    }} />
+                ))}
+                <br />
+                <button type="submit">Submit</button>
             </form>
+
+            {/* Render Scorecard */}
+            <ul>
+                {scorecard.map((item) => (
+                    <li key={item.id}>
+                        <span>Date: {item.date}</span>
+                        <span>Golf Course: {item.golfCourse}</span>
+                        <button onClick={() => handleEditClick(item.id)}>Edit</button>
+                        <button onClick={() => handleDeleteClick(item.id)}>Delete</button>
+                    </li>
+                ))}
+            </ul>
         </div>
     );
 }
 
-function Clubs() {
-    const { user } = useUser();
-    const [clubs, setClubs] = useState([]);
-    const [clubDistances, setClubDistances] = useState([]);
-    const [editingClubId, setEditingClubId] = useState(null); // State to track the club being edited
-    const [editedClub, setEditedClub] = useState({}); // State to hold edited club data
-
-    useEffect(() => {
-        fetch('/club')
-            .then((response) => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error('Failed to fetch clubs');
-                }
-            })
-            .then((data) => {
-                setClubs(data);
-            })
-            .catch((error) => {
-                console.error('Error fetching clubs:', error);
-            });
-    }, []);
-
-    useEffect(() => {
-        fetch('/club_distance')
-            .then((response) => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error('Failed to fetch club distances');
-                }
-            })
-            .then((data) => {
-                setClubDistances(data);
-            })
-            .catch((error) => {
-                console.error('Error fetching club distances:', error);
-            });
-    }, []);
-
-    // Function to add a new club to the list
-    const handleAddClub = (newClub) => {
-        // Update the list of clubs with the new club
-        setClubs([...clubs, newClub]);
-    };
-
-    // Function to delete a club from the list
-    const handleDeleteClub = (clubId) => {
-        // Filter out the club to delete from the list
-        const updatedClubs = clubs.filter((club) => club.id !== clubId);
-        setClubs(updatedClubs);
-    };
-
-    // Function to handle editing a club
-    const handleEditClub = (clubId) => {
-        // Set the editingClubId state to the club being edited
-        setEditingClubId(clubId);
-        // Find the club being edited from the list of clubs and set it in the editedClub state
-        const clubToEdit = clubs.find((club) => club.id === clubId);
-        setEditedClub(clubToEdit);
-    };
-
-    // Function to save the edited club
-    const handleSaveEdit = () => {
-        // Update the list of clubs with the edited club information
-        const updatedClubs = clubs.map((club) => {
-            if (club.id === editedClub.id) {
-                return editedClub;
-            }
-            return club;
-        });
-        setClubs(updatedClubs);
-        // Reset editing state
-        setEditingClubId(null);
-        setEditedClub({});
-    };
-
-    // Function to handle input changes when editing club details
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        // Update the editedClub state with the new value
-        setEditedClub({ ...editedClub, [name]: value });
-    };
-
-    return (
-        <div className="flex justify-center items-center bg-white min-h-screen">
-            <div className="container mx-auto">
-                <AddClubForm onAddClub={handleAddClub} /> {/* Add Club Form component */}
-                <div>
-                    <h1 className="text-3xl font-bold mb-4 text-green-950">Clubs</h1>
-                    <div className="grid grid-cols-1 gap-4">
-                        {clubs.map((club) => (
-                            <div key={club.id} className="border p-4 rounded-md bg-green-950">
-                                {editingClubId === club.id ? (
-                                    <div>
-                                        <label htmlFor="clubName" className="block mb-1 text-green-950">Club Name:</label>
-                                        <input
-                                            type="text"
-                                            id="clubName"
-                                            name="clubName"
-                                            value={editedClub.clubName}
-                                            onChange={handleInputChange}
-                                            className="w-full border rounded-md px-2 py-1"
-                                        />
-                                        <label htmlFor="regularDistance" className="block mb-1 text-green-950">Regular Distance:</label>
-                                        <input
-                                            type="text"
-                                            id="regularDistance"
-                                            name="regularDistance"
-                                            value={editedClub.regularDistance}
-                                            onChange={handleInputChange}
-                                            className="w-full border rounded-md px-2 py-1"
-                                        />
-                                        <label htmlFor="maxDistance" className="block mb-1 text-green-950">Maximum Distance:</label>
-                                        <input
-                                            type="text"
-                                            id="maxDistance"
-                                            name="maxDistance"
-                                            value={editedClub.maxDistance}
-                                            onChange={handleInputChange}
-                                            className="w-full border rounded-md px-2 py-1"
-                                        />
-                                        <label htmlFor="minDistance" className="block mb-1 text-green-950">Minimum Distance:</label>
-                                        <input
-                                            type="text"
-                                            id="minDistance"
-                                            name="minDistance"
-                                            value={editedClub.minDistance}
-                                            onChange={handleInputChange}
-                                            className="w-full border rounded-md px-2 py-1"
-                                        />
-                                        <button onClick={handleSaveEdit} className="bg-green-950 text-white px-4 py-2 rounded-md mr-2">Save</button>
-                                        <button onClick={() => setEditingClubId(null)} className="bg-red-600 text-white px-4 py-2 rounded-md">Cancel</button>
-                                    </div>
-                                ) : (
-                                    <div>
-                                        <p><strong>Club Name:</strong> {club.clubName}</p>
-                                        <p><strong>Regular Distance:</strong> {club.regularDistance}</p>
-                                        <p><strong>Maximum Distance:</strong> {club.maxDistance}</p>
-                                        <p><strong>Minimum Distance:</strong> {club.minDistance}</p>
-                                        <button onClick={() => handleEditClub(club.id)} className="bg-green-950 text-white px-4 py-2 rounded-md mr-2">Edit</button>
-                                        <button onClick={() => handleDeleteClub(club.id)} className="bg-red-600 text-white px-4 py-2 rounded-md">Delete</button>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                    <h1 className="text-3xl font-bold mb-4 text-green-950">Club Distances</h1>
-                    <ul>
-                        {clubDistances.map((club) => (
-                            <li key={club.club_id}>
-                                <Link to={`/club_distance/${club.club_id}`} className="text-green-950">{club.club_name}</Link>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-export default Clubs;
-
+export default PastRoundForm;

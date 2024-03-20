@@ -12,7 +12,7 @@ function PastRounds({ scorecardData: pastScorecardData, loggedInUser, onAddScore
 
   useEffect(() => {
     // Calculate average score when pastScorecardData changes
-    if (pastScorecardData.length > 0) {
+    if (pastScorecardData && pastScorecardData.length > 0) {
       const totalScores = pastScorecardData.map(scorecard => parseInt(scorecard.total_score));
       const sum = totalScores.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
       const average = sum / pastScorecardData.length;
@@ -65,7 +65,7 @@ function PastRounds({ scorecardData: pastScorecardData, loggedInUser, onAddScore
         {/* Display average score */}
         <p className="text-sm text-gray-200 mb-4">Average Score: {averageScore.toFixed(2)}</p>
         {/* List of past scorecards */}
-        {pastScorecardData.map((scorecard, index) => (
+        {pastScorecardData && pastScorecardData.map((scorecard, index) => (
           <div key={index} className="border-b border-gray-400 mb-4 pb-4">
             <p className="text-sm text-gray-200">
               Date: {scorecard.date}, Golf Course: {scorecard.golfCourse}, Par: {scorecard.par}, Total Score: {scorecard.total_score}

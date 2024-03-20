@@ -5,9 +5,9 @@ import Logout from './Logout'; // Import the Logout component
 import ScoreCard from './ScoreCard'; // Import ScoreCard component
 import PastRounds from './PastRounds'; // Import PastRounds component
 import Club from './Clubs'; // Import Club component
-import Login from './Login'; // Import Login component
+import Login from './LoginForm'; // Import Login component
 import Signup from './Signup'; // Import Signup component
-import Home from './Home'; // Import Home component
+//import Home from './Home'; // Import Home component
 
 function NavBar() {
     const { user } = useUser();
@@ -62,9 +62,6 @@ function NavBar() {
                 </div>
             </nav>
             <Switch>
-                <Route exact path="/">
-                    <Home />
-                </Route>
                 <Route path="/scorecard">
                     <ScoreCard scorecard={scorecard} club={club} />
                 </Route>
