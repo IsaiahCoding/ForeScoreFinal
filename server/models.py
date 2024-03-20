@@ -84,9 +84,9 @@ class PastRound(db.Model, SerializerMixin):
     course = db.Column(db.String, nullable=False)
     par = db.Column(db.Integer, nullable=False)
     score = db.Column(db.Integer, nullable=False)
-    fairway_hit = db.Column(db.String, nullable=False)
-    green_in_regulation = db.Column(db.String, nullable=False)
-    putts = db.Column(db.Integer, nullable=False)
+    fairway_hit = db.Column(db.String, nullable=True)
+    green_in_regulation = db.Column(db.String, nullable=True)
+    putts = db.Column(db.Integer, nullable=True)
     total_score = db.Column(db.Integer, nullable=False)
     average_score = db.Column(db.Integer, nullable=False, default=0)
 

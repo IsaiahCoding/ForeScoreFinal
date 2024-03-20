@@ -43,7 +43,7 @@ function ScoreCardForm() {
             Date:
           </label>
           <input
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-100 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-slate-950 leading-tight focus:outline-none focus:shadow-outline"
             id="date"
             type="text"
             placeholder="Enter date"
@@ -56,7 +56,7 @@ function ScoreCardForm() {
             Golf Courses:
           </label>
           <input
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-100 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-slate-950 leading-tight focus:outline-none focus:shadow-outline"
             id="golfCourses"
             type="text"
             placeholder="Enter golf courses"
@@ -77,7 +77,7 @@ function ScoreCardForm() {
             <div className="col-span-1">{index + 1}</div>
             <div className="col-span-1">
               <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-100 leading-tight focus:outline-none focus:shadow-outline"
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-slate-950 leading-tight focus:outline-none focus:shadow-outline"
                 type="text"
                 placeholder="Par"
                 value={par[index]}
@@ -90,7 +90,7 @@ function ScoreCardForm() {
             </div>
             <div className="col-span-1">
               <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-100 leading-tight focus:outline-none focus:shadow-outline"
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-slate-950 leading-tight focus:outline-none focus:shadow-outline"
                 type="text"
                 placeholder="Score"
                 value={score[index]}
@@ -127,7 +127,7 @@ function ScoreCardForm() {
             </div>
             <div className="col-span-1">
               <input
-                              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-100 leading-tight focus:outline-none focus:shadow-outline"
+                              className="shadow appearance-none border rounded w-full py-2 px-3 text-slate-950 leading-tight focus:outline-none focus:shadow-outline"
                               type="text"
                               placeholder="Putts"
                               value={putts[index]}

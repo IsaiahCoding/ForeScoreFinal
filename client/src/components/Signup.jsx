@@ -5,22 +5,34 @@ function Signup(){
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const history = useHistory(); // Initialize useHistory
+    const history = useHistory(); 
 
-    const handleSignup = async (e) => {
+    const handleSignup = (e) => {
         e.preventDefault();
-        const response = await fetch('/signup', {
+        fetch('/signup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ email, username, password }),
-        });
-        const data = await response.json();
-        if (data.status === 'ok') {
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Failed to signup');
+            }
+        })
+        .then(user => {
+            localStorage.setItem('token', user.token);
             history.push('/scorecard');
-        }
+        })
+        .catch(error => {
+            // Handle error cases here
+            console.error(error.message);
+        });
     };
+    
     return (
         <div className="max-w-md mx-auto bg-green-800 p-6 rounded-lg shadow-lg">
             <h2 className="text-center text-2xl font-bold mb-4 text-gray-50">Signup</h2>

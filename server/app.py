@@ -86,12 +86,12 @@ def past_round():
             date=request_body['date'],
             course=request_body['course'],
             par=request_body['par'],
-            score=request_body['score'],
-            fairway_hit=request_body['fairway_hit'],
-            green_in_regulation=request_body['green_in_regulation'],
-            putts=request_body['putts'],
+            #score=request_body['score'],
+            #fairway_hit=request_body['fairway_hit'],
+            #green_in_regulation=request_body['green_in_regulation'],
+            #putts=request_body['putts'],
             total_score=request_body['total_score'],
-            user_id=request_body['user_id']
+            #user_id=request_body['user_id']
         )
         db.session.add(new_past_round)
         db.session.commit()

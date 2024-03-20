@@ -4,6 +4,8 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import ScoreCard from "./ScoreCard";
 import Login from "./LoginForm";
 import Signup from "./Signup";
+import PastRounds from "./PastRounds";
+
 
 function App() {
   const [user, setUser] = useState(null);
@@ -73,6 +75,9 @@ function App() {
         </Route>
         <Route path="/signup">
           <Signup />
+        </Route>
+        <Route path="/past_round">
+          <PastRounds scorecardData={scorecard} />
         </Route>
       </Switch>
     </Router>
