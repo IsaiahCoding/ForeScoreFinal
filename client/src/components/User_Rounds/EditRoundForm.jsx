@@ -3,51 +3,49 @@ import { useHistory, useParams } from 'react-router-dom';
 import { UserContext } from '/Users/isaiahaguilera/Development/code/phase-5/Fore-Score-2/client/src/components/UserContext/UserContext.jsx'; // Import UserContext
 
 const EditRoundForm = () => {
+  const { scorecardId } = useParams(); // Make sure this matches your route parameter
+  const { user } = useContext(UserContext); // Extract user from UserContext
   const [scorecard, setScorecard] = useState({
     date: '',
     course_name: '',
     total_user_score: '',
   });
-  const { scorecardId } = useParams(); // Assuming you're using React Router and have a route like "/edit-scorecard/:scorecardId"
-  const { user } = useContext(UserContext);
   const history = useHistory();
 
   useEffect(() => {
-    // Fetch the existing scorecard data
+    // Fetch the scorecard data using scorecardId
     if (scorecardId) {
-      fetch(`/scorecard/${scorecardId}`, {
-        method: 'GET',
-      })
+      fetch(`/scorecard/${scorecardId}`)
       .then(response => response.json())
-      .then(data => {
-        setScorecard({
-          date: data.date,
-          course_name: data.course_name,
-          total_user_score: data.total_user_score,
-        });
-      })
-      .catch(error => console.error('Error fetching scorecard data:', error));
+      .then(data => setScorecard(data))
+      .catch(error => console.error('Error fetching scorecard:', error));
+    } else {
+      console.error('Scorecard ID is undefined.');
     }
   }, [scorecardId]);
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    // Update the scorecard
-    fetch(`/scorecard/${scorecardId}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        ...scorecard,
-        user_id: user.id, // Ensure you handle user_id correctly on the backend
-      }),
-    })
-    .then(response => {
-      if (!response.ok) throw new Error('Failed to update scorecard');
-      history.push('/rounds'); // Navigate back to the rounds page or wherever makes sense in your app
-    })
-    .catch(error => console.error('Error updating scorecard:', error));
+    // Make sure to check if user exists and has an ID
+    if (user && user.id) {
+      fetch(`/scorecard/${scorecardId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...scorecard,
+          user_id: user.id, // Use user.id from UserContext
+        }),
+      })
+      .then(response => {
+        if (!response.ok) throw new Error('Failed to update scorecard');
+        history.push('/rounds'); // Navigate back to the rounds page or wherever makes sense in your app
+      })
+      .catch(error => console.error('Error updating scorecard:', error));
+    } else {
+      console.error('User ID is undefined.');
+    }
   };
 
   const handleChange = (e) => {
