@@ -1,76 +1,87 @@
 #!/usr/bin/env python3
+
 # Standard library imports
-from datetime import datetime
+from random import randint, choice as rc
+
+# Remote library imports
+from faker import Faker
 
 # Local imports
 from app import app
-from models import db, User, ScoreCard, PastRound, Club, ClubDistance, ClubDistanceJoin
-
-def seed_data():
-    print('Seeding User...')
-    # Create a user
-    user1 = User(username='user1', email='user1@example.com', _password_hash='password1')
-
-    # Create 5 scorecards for user1
-    scorecard1 = ScoreCard(date='2024-03-14', course='Golf Course 1', par=72, score=78, fairway_hit='Yes', green_in_regulation='Yes', putts=30, total_score=78, user=user1)
-    scorecard2 = ScoreCard(date='2024-03-15', course='Golf Course 2', par=70, score=75, fairway_hit='Yes', green_in_regulation='Yes', putts=28, total_score=75, user=user1)
-    scorecard3 = ScoreCard(date='2024-03-16', course='Golf Course 3', par=71, score=80, fairway_hit='Yes', green_in_regulation='Yes', putts=32, total_score=80, user=user1)
-    scorecard4 = ScoreCard(date='2024-03-17', course='Golf Course 4', par=73, score=77, fairway_hit='Yes', green_in_regulation='Yes', putts=29, total_score=77, user=user1)
-    scorecard5 = ScoreCard(date='2024-03-18', course='Golf Course 5', par=70, score=72, fairway_hit='Yes', green_in_regulation='Yes', putts=28, total_score=72, user=user1)
-
-    # Create 5 past rounds for user1
-    past_round1 = PastRound(date='2024-03-10', course='Old Golf Course A', par=72, score=80, fairway_hit='Yes', green_in_regulation='No', putts=32, total_score=80, user=user1)
-    past_round2 = PastRound(date='2024-03-11', course='Old Golf Course B', par=70, score=77, fairway_hit='Yes', green_in_regulation='Yes', putts=29, total_score=77, user=user1)
-    past_round3 = PastRound(date='2024-03-12', course='Old Golf Course C', par=71, score=81, fairway_hit='Yes', green_in_regulation='Yes', putts=33, total_score=81, user=user1)
-    past_round4 = PastRound(date='2024-03-13', course='Old Golf Course D', par=73, score=78, fairway_hit='Yes', green_in_regulation='Yes', putts=30, total_score=78, user=user1)
-    past_round5 = PastRound(date='2024-03-14', course='Old Golf Course E', par=70, score=75, fairway_hit='Yes', green_in_regulation='Yes', putts=28, total_score=75, user=user1)
-
-    # Calculate average score for user1
-    user1_average_score = sum([scorecard.score for scorecard in user1.scorecards]) / len(user1.scorecards)
-    user1.average_score = user1_average_score
-
-    # Create 5 clubs
-    club1 = Club(name='Driver')
-    club2 = Club(name='Putter')
-    club3 = Club(name='Iron')
-    club4 = Club(name='Wedge')
-    club5 = Club(name='Hybrid')
-
-    # Create 5 club distances
-    club_distance1 = ClubDistance(regular_distance=250, max_distance=300, min_distance=200)
-    club_distance2 = ClubDistance(regular_distance=50, max_distance=100, min_distance=0)
-    club_distance3 = ClubDistance(regular_distance=150, max_distance=200, min_distance=100)
-    club_distance4 = ClubDistance(regular_distance=100, max_distance=150, min_distance=50)
-    club_distance5 = ClubDistance(regular_distance=200, max_distance=250, min_distance=150)
-
-    # Create 5 club distance joins for user1
-    club_distance_join1 = ClubDistanceJoin(club=club1, club_distance=club_distance1, user=user1)
-    club_distance_join2 = ClubDistanceJoin(club=club2, club_distance=club_distance2, user=user1)
-    club_distance_join3 = ClubDistanceJoin(club=club3, club_distance=club_distance3, user=user1)
-    club_distance_join4 = ClubDistanceJoin(club=club4, club_distance=club_distance4, user=user1)
-    club_distance_join5 = ClubDistanceJoin(club=club5, club_distance=club_distance5, user=user1)
-
-    # Add data to session
-    db.session.add_all([
-        user1,
-        scorecard1, scorecard2, scorecard3, scorecard4, scorecard5,
-        past_round1, past_round2, past_round3, past_round4, past_round5,
-        club1, club2, club3, club4, club5,
-        club_distance1, club_distance2, club_distance3, club_distance4, club_distance5,
-        club_distance_join1, club_distance_join2, club_distance_join3, club_distance_join4, club_distance_join5
-    ])
-
-    # Commit changes
-    db.session.commit()
-    print("Seed completed successfully.")
+from models import db, User, Club, ClubDistance, ClubDistanceJoin, Scorecard, HoleStat
 
 if __name__ == '__main__':
+    fake = Faker()
     with app.app_context():
         print("Starting seed...")
-        
-        # Clear existing data
-        db.drop_all()
-        db.create_all()
 
-        # Call seed_data function
-        seed_data()
+        # Seed Users
+        for _ in range(10):
+            user = User(
+                name=fake.name(),
+                username=fake.user_name(),
+                email=fake.email(),
+                average_score=randint(50, 100)
+            )
+            db.session.add(user)
+
+        # Seed Clubs
+        for _ in range(5):
+            club = Club(
+                name=fake.company(),
+                brand=fake.company_suffix()
+            )
+            db.session.add(club)
+
+        # Seed Club Distances
+        for _ in range(5):
+            distance = ClubDistance(
+                regular_distance=randint(150, 300),
+                max_distance=randint(300, 500),
+                min_distance=randint(50, 200)
+            )
+            db.session.add(distance)
+
+        # Seed Club Distance Joins
+        users = User.query.all()
+        clubs = Club.query.all()
+        distances = ClubDistance.query.all()
+        for user in users:
+            for club in clubs:
+                for distance in distances:
+                    join = ClubDistanceJoin(
+                        user=user,
+                        club=club,
+                        club_distance=distance
+                    )
+                    db.session.add(join)
+
+        # Seed Scorecards and Hole Stats (assuming each user has at least one scorecard)
+        for user in users:
+            for _ in range(randint(1, 5)):  # Each user has 1-5 scorecards
+                scorecard = Scorecard(
+                    date=fake.date_this_year(),
+                    course_name=fake.word(),
+                    total_course_par=randint(50, 100),
+                    total_user_score=randint(40, 120),
+                    current_round=fake.boolean(),
+                    user=user
+                )
+                db.session.add(scorecard)
+
+                for _ in range(18):  # Assuming 18-hole courses
+                    hole_stat = HoleStat(
+                        hole_number=_ + 1,
+                        par=randint(3, 5),
+                        user_score=randint(3, 8),
+                        fairway_hit=fake.boolean(),
+                        green_in_reg=fake.boolean(),
+                        putts=randint(1, 4),
+                        scorecard=scorecard
+                    )
+                    db.session.add(hole_stat)
+
+        # Commit changes to the database
+        db.session.commit()
+
+        print("Seed complete!")

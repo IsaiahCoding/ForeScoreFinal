@@ -1,48 +1,61 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
-import { useUser } from './UserContext/UserContext';
-
-import NavBar from './NavBar';
-import ScoreCard from './ScoreCard';
-import Login from './LoginForm';
+import React, { useContext, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+import Login from './Login';
+import Home from './Home';
 import Signup from './Signup';
-import PastRounds from './PastRounds';
-import UserContext from './UserContext/UserContext';
+import NavBar from './NavBar';
+
+
 import Logout from './Logout';
-import Clubs from './Clubs';
+import { UserContext} from '/Users/isaiahaguilera/Development/code/phase-5/Fore-Score-2/client/src/components/UserContext/UserContext.jsx';
 
 function App() {
-  const [user, setUser] = useState(null);
-  const [scorecard, setScorecard] = useState([]);
-  const [club, setClub] = useState([]);
+  const { user, setUser } = useContext(UserContext);
 
   useEffect(() => {
-    // Fetch user data or perform any necessary initial setup
-  }, []);
+    fetch("/check_session", {
+      headers: {
+        'Authorization': `Bearer ${sessionStorage.getItem('authToken')}`
+      },
+    })
+    .then((response) => {
+      if (response.ok) {
+        response.json().then((user) => setUser(user));
+      } else {
+        setUser(null); 
+      }
+    })
+    .catch((error) => {
+      console.error("Session check failed:", error);
+      setUser(null);
+    });
+  }, [setUser]);
 
   return (
-    <UserContext.Provider value={{ user, setUser }}>
-      <Router>
-        <NavBar />
-        <Route exact path="/login">
-          <Login />
-        </Route>
-        <Route path="/scorecard">
-          {scorecard.length > 0 ? (
-            <ScoreCard scorecardData={scorecard} />
-          ) : null} {/* Render null when scorecard data is empty */}
+    <Router>
+      <NavBar /> 
+      <Switch>
+      
+        <Route path="/login">
+          {user ? <Redirect to="/home" /> : <Login />}
         </Route>
         <Route path="/signup">
-          <Signup />
+          {user ? <Redirect to="/home" /> : <Signup />}
         </Route>
-        <Route path="/past_round">
-          <PastRounds scorecardData={scorecard} />
-        </Route>
-        <Route path="/club">
-          <Clubs clubData={club} />
-        </Route>
-      </Router>
-    </UserContext.Provider>
+        
+        {user ? (
+          <>
+            <Route exact path="/home" component={Home} />
+            <Route exact path="/logout" component={Logout} />
+            <Route exact path="/">
+              <Redirect to="/home" />
+            </Route>
+          </>
+        ) : (
+          <Redirect to="/login" />
+        )}
+      </Switch>
+    </Router>
   );
 }
 

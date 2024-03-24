@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useUser } from './UserContext/UserContext';
+import { UserContext } from './UserContext/UserContext'; // Correct the import path as necessary
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
   const history = useHistory();
-  const { user, setUser } = useUser();
+  const { setUser } = useContext(UserContext); // Use useContext hook here
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -16,14 +15,14 @@ function Login() {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, password, username }),
+      body: JSON.stringify({ email, password }),
     })
-    .then((r) => {
-      if (r.ok) {
-        return r.json().then((user) => {
-          setUser(email, password, username);
-          sessionStorage.setItem('user', JSON.stringify(email, password, username));
-          history.push('/scorecard');
+    .then((response) => {
+      if (response.ok) {
+        return response.json().then((user) => {
+          setUser(user); // Assuming setUser expects the user object
+          sessionStorage.setItem('user', JSON.stringify(user)); // Store the user object
+          history.push('/home');
         });
       } else {
         console.error('Failed to login');
@@ -50,13 +49,6 @@ function Login() {
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full mb-4 px-4 py-2 rounded border border-gray-300 focus:outline-none focus:border-indigo-500 text-slate-950"
-        />
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
           className="w-full mb-4 px-4 py-2 rounded border border-gray-300 focus:outline-none focus:border-indigo-500 text-slate-950"
         />
         <button

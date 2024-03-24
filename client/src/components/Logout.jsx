@@ -1,24 +1,22 @@
-import React from 'react';
-import { useHistory } from 'react-router-dom'; // Import useHistory hook
-import { useUser } from './UserContext/UserContext';
+import React, { useContext } from 'react';
+import { useHistory } from 'react-router-dom';
+import { UserContext } from './UserContext/UserContext'; // Adjust the import path as necessary
 
 function Logout() {
-    const { setUser } = useUser(); // Destructure setUser from useUser hook
-    const history = useHistory(); // Initialize useHistory hook
+    const { setUser } = useContext(UserContext);
+    const history = useHistory();
 
     function handleClick() {
         fetch('/logout', {
-            method: 'POST',
+            method: 'DELETE', // Changed from POST to DELETE to match the backend
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({}),
         })
-        .then((r) => {
-            if (r.ok) {
-                // Clear user data and redirect to the scorecard page
+        .then((response) => {
+            if (response.ok) {
                 setUser(null);
-                sessionStorage.removeItem('user');
+                sessionStorage.removeItem('user'); // Adjust based on how you're storing the session/client authentication state
                 history.push('/login');
             } else {
                 console.error('Failed to logout');

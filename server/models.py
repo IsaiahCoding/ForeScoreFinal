@@ -1,146 +1,118 @@
+#Remote library imports
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import relationship, validates
+from sqlalchemy.orm import validates
+from sqlalchemy.ext.associationproxy import association_proxy
+from email_validator import validate_email, EmailNotValidError
+
+#Local imports
 from config import db, bcrypt
-from datetime import datetime
 
 class User(db.Model, SerializerMixin):
-    __tablename__ = "users"
+    __tablename__ = 'users'
+
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True)
-    _password_hash = db.Column(db.String(128))
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.now)
-    updated_at = db.Column(db.DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
-
-    # Relationship with ScoreCards
-    scorecards = relationship("ScoreCard", back_populates="user", cascade="all, delete")
-
-    # Relationship with PastRounds
-    past_rounds = relationship("PastRound", back_populates="user", cascade="all, delete")
-
-    # Relationship with ClubDistanceJoin
-    club_distance_joins = relationship("ClubDistanceJoin", back_populates="user")
-
-    # Serialize Rules
-    serialize_rules = ('-scorecards.user', '-past_rounds.user', '-club_distance_joins.user', '-_password_hash')
-    #Validate rules:
+    name = db.Column(db.String)
+    username = db.Column(db.String, unique=True)
+    email = db.Column(db.String, unique=True)
+    _password_hash = db.Column(db.String)
+    average_score = db.Column(db.Integer)
+    # Relationships:
+    scorecards = db.relationship('Scorecard', back_populates='user')
+    club_distances = db.relationship('ClubDistanceJoin', back_populates='user')
+    
     @hybrid_property
     def password_hash(self):
         raise Exception('Password hashes may not be viewed.')
-
+    
     @password_hash.setter
     def password_hash(self, password):
         password_hash = bcrypt.generate_password_hash(
             password.encode('utf-8'))
         self._password_hash = password_hash.decode('utf-8')
-
+    
     def authenticate(self, password):
         return bcrypt.check_password_hash(
             self._password_hash, password.encode('utf-8'))
     
-    @validates('username')
-    def validate_username(self, key, value):
-        if not value or not 3 <= len(value) <=20:
-            raise ValueError('Username must be between 3 and 20 characters')
-        return value
+    # @validates('email')
+    # def validate_email(self, key, value):
+    #     try:
+    #         validate_email(value)
+    #     except EmailNotValidError as e:
+    #         raise ValueError(str(e))
+    #     return(value)
+    
+    serialize_rules = ('-password_hash', '-scorecards.user', '-club_distances.user')
+        
     
     
     
-    
 
-
-
-
-
-
-
-
-class ScoreCard(db.Model, SerializerMixin):
-    __tablename__ = "scorecards"
-    id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.String(8), nullable=False)
-    course = db.Column(db.String, nullable=False)
-    par = db.Column(db.Integer, nullable=False)
-    score = db.Column(db.Integer, nullable=False)
-    fairway_hit = db.Column(db.String, nullable=False)
-    green_in_regulation = db.Column(db.String, nullable=False)
-    putts = db.Column(db.Integer, nullable=False)
-    total_score = db.Column(db.Integer, nullable=False)
-
-    # Foreign Key
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-
-    # Relationship with User
-    user = relationship("User", back_populates="scorecards")
-
-    # Serialize Rules
-    serialize_rules = ('-user.scorecards',)
-
-class PastRound(db.Model, SerializerMixin):
-    __tablename__ = "past_rounds"
-    id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.String(8), nullable=False)
-    course = db.Column(db.String, nullable=False)
-    par = db.Column(db.Integer, nullable=False)
-    score = db.Column(db.Integer, nullable=False)
-    fairway_hit = db.Column(db.String, nullable=True)
-    green_in_regulation = db.Column(db.String, nullable=True)
-    putts = db.Column(db.Integer, nullable=True)
-    total_score = db.Column(db.Integer, nullable=False)
-    average_score = db.Column(db.Integer, nullable=False, default=0)
-
-
-    # Foreign Key
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-
-    # Relationship with User
-    user = relationship("User", back_populates="past_rounds")
-
-    # Serialize Rules
-    serialize_rules = ('-user.past_rounds',)
-    
 class Club(db.Model, SerializerMixin):
-    __tablename__ = "clubs"
+    __tablename__ = 'clubs'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable=False)
-
-    # Foreign Key:
-
-    # Relationship:
-    club_distance_joins = relationship("ClubDistanceJoin", back_populates="club", cascade='all, delete-orphan')
-
-    # Serialize Rules:
-    serialize_rules = ('-club.club_distance_joins',)
-
+    name = db.Column(db.String)
+    brand = db.Column(db.String)
+    # Relationships:
+    club_distances = db.relationship('ClubDistanceJoin', back_populates='club')
+    
+    serialize_rules = ('-club_distances.club',)
 
 class ClubDistance(db.Model, SerializerMixin):
-    __tablename__ = "club_distances"
+    __tablename__ = 'club_distances'
     id = db.Column(db.Integer, primary_key=True)
-    regular_distance = db.Column(db.Integer, nullable=False)
-    max_distance = db.Column(db.Integer, nullable=False)
-    min_distance = db.Column(db.Integer, nullable=False)
-
-    # Foreign Key:
-
-    # Relationship:
-    club_distance_joins = relationship("ClubDistanceJoin", back_populates="club_distance", cascade='all, delete-orphan')
-
-    # Serialize Rules:
-    serialize_rules = ('-club.club_distance_joins',)
+    regular_distance = db.Column(db.Integer)
+    max_distance = db.Column(db.Integer)
+    min_distance = db.Column(db.Integer)
+    # Relationships:
+    club_distances = db.relationship('ClubDistanceJoin', back_populates='club_distance')
+    
+    serialize_rules = ('-club_distances.club_distance','-club_distances.club', '-club_distances.user.scorecards', '-club_distances.user')
 
 
 class ClubDistanceJoin(db.Model, SerializerMixin):
-    __tablename__ = "club_distance_joins"
+    __tablename__ = 'club_distance_join'
     id = db.Column(db.Integer, primary_key=True)
-    club_id = db.Column(db.Integer, db.ForeignKey('clubs.id'), nullable=False)
-    club_distance_id = db.Column(db.Integer, db.ForeignKey('club_distances.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    # Foreign Keys:
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    club_id = db.Column(db.Integer, db.ForeignKey('clubs.id'))
+    club_distance_id = db.Column(db.Integer, db.ForeignKey('club_distances.id'))
+    # Relationships:
+    user = db.relationship('User', back_populates='club_distances')
+    club = db.relationship('Club', back_populates='club_distances')
+    club_distance = db.relationship('ClubDistance', back_populates='club_distances')
+    
+    serialize_rules = ('-user.club_distances', '-club.club_distances', '-club_distance.club_distances')
 
-    # Relationship:
-    club = relationship("Club", back_populates="club_distance_joins")
-    club_distance = relationship("ClubDistance", back_populates="club_distance_joins")
-    user = relationship("User", back_populates="club_distance_joins")
+class Scorecard(db.Model, SerializerMixin):
+    __tablename__ = 'scorecards'
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime)
+    course_name = db.Column(db.String)
+    total_course_par = db.Column(db.Integer)
+    total_user_score = db.Column(db.Integer)
+    current_round = db.Column(db.Boolean)
+    # Foreign Key:
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    # Relationships:
+    user = db.relationship('User', back_populates='scorecards')
+    hole_stats = db.relationship('HoleStat', back_populates='scorecard')
+    
+    serialize_rules = ('-user.scorecards', '-hole_stats.scorecard')
 
-    # Serialize Rules:
-    serialize_rules = ('-club.club_distance_joins', '-club_distance.club_distance_joins', '-user.club_distance_joins',)
+class HoleStat(db.Model, SerializerMixin):
+    __tablename__ = 'hole_stats'
+    id = db.Column(db.Integer, primary_key=True)
+    hole_number = db.Column(db.Integer)
+    par = db.Column(db.Integer)
+    user_score = db.Column(db.Integer)
+    fairway_hit = db.Column(db.Boolean)
+    green_in_reg = db.Column(db.Boolean)
+    putts = db.Column(db.Integer)
+    # Foreign Key:
+    scorecard_id = db.Column(db.Integer, db.ForeignKey('scorecards.id'))
+    # Relationships:
+    scorecard = db.relationship('Scorecard', back_populates='hole_stats')
+    
+    serialize_rules = ('-scorecard.hole_stats',)
