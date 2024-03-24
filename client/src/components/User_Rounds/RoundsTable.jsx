@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import useAuth from '../UserAuth/UserAuth';
+import { useHistory } from 'react-router-dom'; // To navigate to the edit form
 
 const RoundsTable = () => {
   const [rounds, setRounds] = useState([]);
-  const { user } = useAuth(); // Assuming your hook returns user info
+  const { user } = useAuth();
+  const history = useHistory(); // For navigating to the edit page
 
   useEffect(() => {
     if (!user?.id) {
@@ -26,9 +28,29 @@ const RoundsTable = () => {
       });
   }, [user?.id]);
 
+  const handleEdit = (scorecardId) => {
+    // Navigate to a specific route for editing, passing the scorecardId as state or as part of the URL
+    history.push(`/edit-scorecard/${scorecardId}`); // Adjust the path as necessary
+  };
+
+  const handleDelete = async (scorecardId) => {
+    try {
+      const response = await fetch(`/scorecard/${scorecardId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete scorecard');
+      }
+      // Filter out the deleted scorecard from the rounds state
+      setRounds(rounds.filter((round) => round.id !== scorecardId));
+    } catch (error) {
+      console.error('Error deleting scorecard:', error);
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto bg-green-800 p-6 rounded-lg shadow-lg">
-      <h2 className="text-center text-2xl font-bold mb-4" style={{ color: '#f8fafc' }}>Rounds Table</h2>
+      <h2 className="text-center text-2xl font-bold mb-4" style={{ color: '#f8fafc' }}>Past Rounds</h2>
       <div className="overflow-x-auto">
         <table className="table-auto w-full">
           <thead className="text-slate-50">
@@ -47,10 +69,20 @@ const RoundsTable = () => {
                 <td className="px-4 py-2">{round.course_name}</td>
                 <td className="px-4 py-2">{round.total_user_score}</td>
                 <td className="px-4 py-2">
-                  <button className="bg-zinc-700 hover:bg-slate-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300">Edit</button>
+                  <button
+                    onClick={() => handleEdit(round.id)}
+                    className="bg-zinc-700 hover:bg-slate-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300"
+                  >
+                    Edit
+                  </button>
                 </td>
                 <td className="px-4 py-2">
-                  <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300">Delete</button>
+                  <button
+                    onClick={() => handleDelete(round.id)}
+                    className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300"
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}
