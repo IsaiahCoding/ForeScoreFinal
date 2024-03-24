@@ -188,16 +188,36 @@ def club_distance_id(club_distance_id):
         return make_response({'error': 'Club Distance not found'}, 404)
     
 
+# @app.route('/scorecard/', methods=['GET', 'POST'])
+# def scorecard():
+#     if request.method == 'GET':
+#         scorecards = Scorecard.query.all()
+#         scorecards_dict = [scorecard.to_dict(rules=('-user',)) for scorecard in scorecards]
+#         return make_response(scorecards_dict, 200)
+#     elif request.method == 'POST':
+#         data = request.get_json()
+#         if data:
+#             scorecard = Scorecard(user_id=data.get('user_id'), date=datetime.now())
+#             db.session.add(scorecard)
+#             db.session.commit()
+#             return make_response(scorecard.to_dict(rules=('-user',)), 201)
+#         else:
+#             return make_response({'error': 'No data provided'}, 400)
+
 @app.route('/scorecard/', methods=['GET', 'POST'])
 def scorecard():
-    if request.method == 'GET':
-        scorecards = Scorecard.query.all()
-        scorecards_dict = [scorecard.to_dict(rules=('-user',)) for scorecard in scorecards]
-        return make_response(scorecards_dict, 200)
-    elif request.method == 'POST':
+    if request.method == 'POST':
         data = request.get_json()
         if data:
-            scorecard = Scorecard(user_id=data.get('user_id'), date=datetime.now())
+            # Now also setting course_name from the incoming request data
+            scorecard = Scorecard(
+                user_id=data.get('user_id'), 
+                date=datetime.now(),  # Consider using the date from the data if it's intended to be set by the user
+                course_name=data.get('course'),  # Assuming 'course' is the key in your payload for course name
+                total_course_par=sum(data.get('par', [])),  # Example of calculating total par from the par array
+                total_user_score=sum(data.get('score', [])),  # Example of calculating total score from the score array
+                current_round=True  # or however you determine if it's the current round
+            )
             db.session.add(scorecard)
             db.session.commit()
             return make_response(scorecard.to_dict(rules=('-user',)), 201)
