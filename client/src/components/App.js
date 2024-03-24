@@ -5,6 +5,7 @@ import Home from './Home';
 import Signup from './Signup';
 import NavBar from './NavBar';
 import ScoreCard from './ScoreCard';
+import UserPastRounds from './UserPastRounds';
 
 
 import Logout from './Logout';
@@ -49,6 +50,7 @@ function App() {
             <Route exact path="/home" component={Home} />
             <Route exact path="/logout" component={Logout} />
             <Route exact path="/scorecard" component={ScoreCard} />
+            <Route exact path="/past_rounds" component={UserPastRounds} />
             <Route exact path="/">
               <Redirect to="/home" />
               

@@ -21,6 +21,9 @@ const NavBar = () => {
         <li>
           <Link to="/logout">Logout</Link>
         </li>
+        <li>
+          <Link to="/past_rounds">Past Rounds</Link>
+        </li>
       </ul>
     </nav>
   );
