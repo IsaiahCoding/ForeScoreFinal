@@ -8,6 +8,11 @@ const NavBar = () => {
   return (
     <nav>
       <ul>
+        {user && ( // Render "Hello, username" only if user is logged in
+          <li>
+            <span>Hello, {user.username}</span>
+          </li>
+        )}
         <li>
           <Link to="/home">Home</Link>
         </li>
@@ -21,15 +26,10 @@ const NavBar = () => {
             </li>
           </>
         )}
-        {user && ( // Render user's name and logout link if user is logged in
-          <>
-            <li>
-              <span>Hello, {user.username}</span>
-            </li>
-            <li>
-              <Link to="/logout">Logout</Link>
-            </li>
-          </>
+        {user && ( // Render logout link if user is logged in
+          <li>
+            <Link to="/logout">Logout</Link>
+          </li>
         )}
         <li>
           <Link to="/scorecard">Scorecard</Link>

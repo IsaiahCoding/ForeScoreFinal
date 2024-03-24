@@ -28,7 +28,7 @@ const AverageScore = () => {
 
   return (
     <div>
-      <h2>Average Score</h2>
+      {/* <h2>Average Score</h2> */}
       {averageScore !== null ? (
         <p>{`Your average score: ${averageScore}`}</p>
       ) : (

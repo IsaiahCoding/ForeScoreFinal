@@ -259,6 +259,43 @@ def scorecards_by_user(user_id):
     else:
        
         return make_response({'error': 'No scorecards found for the user'}, 404)
+# Able to Read,Edit,Delete scorecard byt userid by scorecardId
+from flask import Flask, request, jsonify, make_response
+
+@app.route('/scorecard/user/<int:user_id>/<int:scorecard_id>', methods=['GET', 'PATCH', 'DELETE'])
+def scorecard_operations(user_id, scorecard_id):
+    # Authentication and authorization checks here
+
+    if request.method == 'GET':
+        # Fetch and return the specific scorecard
+        scorecard = Scorecard.query.filter_by(id=scorecard_id, user_id=user_id).first()
+        if scorecard:
+            return jsonify(scorecard.to_dict())
+        else:
+            return make_response({'error': 'Scorecard not found'}, 404)
+
+    elif request.method == 'PATCH':
+        # Update the specific scorecard
+        data = request.json
+        scorecard = Scorecard.query.filter_by(id=scorecard_id, user_id=user_id).first()
+        if scorecard:
+            # Update scorecard fields from data
+            scorecard.update_from_dict(data)  # Assuming this method updates the model from the dict
+            db.session.commit()
+            return jsonify(scorecard.to_dict())
+        else:
+            return make_response({'error': 'Scorecard not found'}, 404)
+
+    elif request.method == 'DELETE':
+        # Delete the specific scorecard
+        scorecard = Scorecard.query.filter_by(id=scorecard_id, user_id=user_id).first()
+        if scorecard:
+            db.session.delete(scorecard)
+            db.session.commit()
+            return make_response({'message': 'Scorecard deleted successfully'}, 200)
+        else:
+            return make_response({'error': 'Scorecard not found'}, 404)
+
 
 
 @app.route('/holestats', methods=['GET','POST'])
