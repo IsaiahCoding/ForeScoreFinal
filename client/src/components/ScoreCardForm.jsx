@@ -11,13 +11,13 @@ function ScoreCardForm() {
   const [gir, setGir] = useState(Array(18).fill(false));
   const [putts, setPutts] = useState(Array(18).fill(''));
   const history = useHistory();
-  const { user } = useContext(UserContext); // Correctly using useContext here
+  const { user } = useContext(UserContext); 
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     try {
       // Check if user is undefined or if user.id is missing
-      if (!user || !user.id) { // Adjusted to use the corrected context variable
+      if (!user || !user.id) {
         console.error('User is not logged in or user ID is missing');
         return;
       }
