@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useContext } from 'react'; // Added useContext here
 import { useHistory } from 'react-router-dom';
-import { useUser } from './UserContext/UserContext';
+import { UserContext } from './UserContext/UserContext';
 
 function ScoreCardForm() {
   const [date, setDate] = useState('');
@@ -10,19 +10,19 @@ function ScoreCardForm() {
   const [fairwayHit, setFairwayHit] = useState(Array(18).fill(false));
   const [gir, setGir] = useState(Array(18).fill(false));
   const [putts, setPutts] = useState(Array(18).fill(''));
-  const { loggedInUser } = useUser();
   const history = useHistory();
+  const { user } = useContext(UserContext); // Correctly using useContext here
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Check if loggedInUser is undefined or if loggedInUser.id is missing
-      if (!loggedInUser || !loggedInUser.id) {
+      // Check if user is undefined or if user.id is missing
+      if (!user || !user.id) { // Adjusted to use the corrected context variable
         console.error('User is not logged in or user ID is missing');
         return;
       }
   
-      const response = await fetch('/past_round', {
+      const response = await fetch('/scorecard', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -42,13 +42,12 @@ function ScoreCardForm() {
             }
             return acc;
           }, []),
-          user_id: loggedInUser.id,
+          user_id: user.id, // Use user.id from useContext
         }),
       });
       if (response.ok) {
-        
         const newScorecard = await response.json();
-        history.push('/past_round');
+        history.push('/scorecard');
       } else {
         console.error('Failed to submit past round');
       }
