@@ -34,6 +34,9 @@ const NavBar = () => {
         <li>
           <Link to="/scorecard">Scorecard</Link>
         </li>
+        <li>
+          <Link to="/rounds">Rounds</Link>
+        </li>
       </ul>
     </nav>
   );

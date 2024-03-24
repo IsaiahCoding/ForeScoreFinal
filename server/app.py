@@ -8,6 +8,8 @@ from flask_restful import Resource
 from datetime import datetime
 # Local imports
 from config import app, db, api
+import bcrypt
+
 # Add your model imports
 from models import User, Club, ClubDistance, ClubDistanceJoin, Scorecard, HoleStat
 
@@ -131,7 +133,7 @@ api.add_resource(Login, '/login', endpoint='login')
 
 class Logout(Resource):
     def delete(self):
-        session['user_id'] = None
+        session.pop('user_id', None)
         return make_response({'message': 'Logged out'}, 200)
 
 api.add_resource(Logout, '/logout', endpoint='logout')
@@ -245,6 +247,19 @@ def scorecard_id(scorecard_id):
             return make_response({'message': 'Scorecard deleted'}, 200)
     else:
         return make_response({'error': 'Scorecard not found'}, 404)
+################################################################Route of scorecard by user_id
+@app.route('/scorecard/user/<int:user_id>', methods=['GET'])
+def scorecards_by_user(user_id):
+    scorecards = Scorecard.query.filter_by(user_id=user_id).all()
+
+    if scorecards:
+        scorecards_dict = [scorecard.to_dict() for scorecard in scorecards]
+        
+        return make_response(jsonify(scorecards_dict), 200)
+    else:
+       
+        return make_response({'error': 'No scorecards found for the user'}, 404)
+
 
 @app.route('/holestats', methods=['GET','POST'])
 def holestats():
