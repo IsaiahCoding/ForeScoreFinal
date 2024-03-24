@@ -1,28 +1,29 @@
-import React, { useContext } from 'react';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
-import { UserContext } from './UserContext/UserContext'; // Adjust the import path as necessary
-import Logout from './Logout';
-// Import other components
 
-function NavBar() {
-    const { user } = useContext(UserContext);
+import React from 'react';
+import { Link } from 'react-router-dom';
 
-    return (
-        <Router>
-            <nav>
-                {/* Navigation content */}
-                {user ? (
-                    <Logout />
-                ) : (
-                    <>
-                        <Link to="/login">Login</Link>
-                        <Link to="/signup">Signup</Link>
-                    </>
-                )}
-            </nav>
-            {/* Routes */}
-        </Router>
-    );
-}
+const NavBar = () => {
+  return (
+    <nav>
+      <ul>
+        <li>
+          <Link to="/home">Home</Link>
+        </li>
+        <li>
+          <Link to="/login">Login</Link>
+        </li>
+        <li>
+          <Link to="/signup">Signup</Link>
+        </li>
+        <li>
+          <Link to="/scorecard">Scorecard</Link>
+        </li>
+        <li>
+          <Link to="/logout">Logout</Link>
+        </li>
+      </ul>
+    </nav>
+  );
+};
 
 export default NavBar;
