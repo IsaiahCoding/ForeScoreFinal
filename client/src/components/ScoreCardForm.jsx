@@ -22,9 +22,9 @@ function ScoreCardForm() {
         return;
       }
   
-      // Structure the hole statistics for the POST request
+      // Structure the hole stats for the POST request
       const holesData = par.map((parValue, index) => ({
-        hole_number: index + 1,  // Assuming hole numbers are 1-indexed
+        hole_number: index + 1,  
         par: parseInt(parValue, 10),
         score: parseInt(score[index], 10),
         fairway_hit: fairwayHit[index],
@@ -40,8 +40,8 @@ function ScoreCardForm() {
         body: JSON.stringify({
           date,
           course: golfCourses,
-          holes: holesData,  // Include the structured hole stats
-          user_id: user.id, // Use user.id from useContext
+          holes: holesData,  
+          user_id: user.id, 
         }),
       });
       if (response.ok) {
