@@ -206,25 +206,60 @@ def club_distance_id(club_distance_id):
 #         else:
 #             return make_response({'error': 'No data provided'}, 400)
 
+# @app.route('/scorecard/', methods=['GET', 'POST'])
+# def scorecard():
+#     if request.method == 'POST':
+#         data = request.get_json()
+#         if data:
+#             scorecard = Scorecard(
+#                 user_id=data.get('user_id'), 
+#                 date=datetime.now(),  
+#                 course_name=data.get('course'),  
+#                 total_course_par=sum(data.get('par', [])),  
+#                 total_user_score=sum(data.get('score', [])), 
+#                 current_round=True  
+#             )
+#             db.session.add(scorecard)
+#             db.session.commit()
+#             return make_response(scorecard.to_dict(rules=('-user',)), 201)
+#         else:
+#             return make_response({'error': 'No data provided'}, 400)
 @app.route('/scorecard/', methods=['GET', 'POST'])
 def scorecard():
     if request.method == 'POST':
         data = request.get_json()
         if data:
-            # Now also setting course_name from the incoming request data
             scorecard = Scorecard(
-                user_id=data.get('user_id'), 
-                date=datetime.now(),  # Consider using the date from the data if it's intended to be set by the user
-                course_name=data.get('course'),  # Assuming 'course' is the key in your payload for course name
-                total_course_par=sum(data.get('par', [])),  # Example of calculating total par from the par array
-                total_user_score=sum(data.get('score', [])),  # Example of calculating total score from the score array
-                current_round=True  # or however you determine if it's the current round
+                user_id=data.get('user_id'),
+                date=datetime.now(),  # Consider date from data if appropriate
+                course_name=data.get('course'),
+                total_course_par=sum(hole['par'] for hole in data.get('holes', [])),
+                total_user_score=sum(hole['score'] for hole in data.get('holes', [])),
+                current_round=True
             )
             db.session.add(scorecard)
-            db.session.commit()
-            return make_response(scorecard.to_dict(rules=('-user',)), 201)
+            db.session.flush()  # This flushes changes to the database to assign an ID to scorecard without committing the transaction
+
+            # Assume data['holes'] is a list of dictionaries, each with hole stats
+            for hole_data in data.get('holes', []):
+                hole_stat = HoleStat(
+                    hole_number=hole_data.get('hole_number'),
+                    par=hole_data.get('par'),
+                    user_score=hole_data.get('score'),
+                    fairway_hit=hole_data.get('fairway_hit'),
+                    green_in_reg=hole_data.get('green_in_reg'),
+                    putts=hole_data.get('putts'),
+                    scorecard_id=scorecard.id  # Now that scorecard has an ID, we can reference it
+                )
+                db.session.add(hole_stat)
+
+            db.session.commit()  # Now commit everything to the database
+            return make_response(scorecard.to_dict(rules=('-user', '-hole_stats', '-hole_stats.scorecard')), 201)
         else:
             return make_response({'error': 'No data provided'}, 400)
+
+
+
 
 @app.route('/scorecard/<int:scorecard_id>', methods=['GET', 'PATCH', 'DELETE'])
 def scorecard_id(scorecard_id):

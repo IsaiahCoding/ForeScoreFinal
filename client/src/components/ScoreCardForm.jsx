@@ -17,10 +17,20 @@ function ScoreCardForm() {
     e.preventDefault();
     try {
       // Check if user is undefined or if user.id is missing
-      if (!user || !user.id) { // Adjusted to use the corrected context variable
+      if (!user || !user.id) {
         console.error('User is not logged in or user ID is missing');
         return;
       }
+  
+      // Structure the hole statistics for the POST request
+      const holesData = par.map((parValue, index) => ({
+        hole_number: index + 1,  // Assuming hole numbers are 1-indexed
+        par: parseInt(parValue, 10),
+        score: parseInt(score[index], 10),
+        fairway_hit: fairwayHit[index],
+        green_in_reg: gir[index],
+        putts: parseInt(putts[index], 10),
+      }));
   
       const response = await fetch('/scorecard', {
         method: 'POST',
@@ -30,18 +40,7 @@ function ScoreCardForm() {
         body: JSON.stringify({
           date,
           course: golfCourses,
-          par: par.reduce((acc, curr) => {
-            if (!isNaN(curr)) {
-              acc.push(parseInt(curr));
-            }
-            return acc;
-          }, []),
-          score: score.reduce((acc, curr) => {
-            if (!isNaN(curr)) {
-              acc.push(parseInt(curr));
-            }
-            return acc;
-          }, []),
+          holes: holesData,  // Include the structured hole stats
           user_id: user.id, // Use user.id from useContext
         }),
       });
@@ -49,12 +48,13 @@ function ScoreCardForm() {
         const newScorecard = await response.json();
         history.push('/scorecard');
       } else {
-        console.error('Failed to submit past round');
+        console.error('Failed to submit scorecard');
       }
     } catch (error) {
-      console.error('Error submitting past round:', error);
+      console.error('Error submitting scorecard:', error);
     }
   };
+  
   
 
   const totalPar = useMemo(() => {
