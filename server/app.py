@@ -206,37 +206,89 @@ def club_distance_id(club_distance_id):
 #         else:
 #             return make_response({'error': 'No data provided'}, 400)
 
+# @app.route('/scorecard/', methods=['GET', 'POST'])
+# def scorecard():
+#     if request.method == 'POST':
+#         data = request.get_json()
+#         if data:
+#             scorecard = Scorecard(
+#                 user_id=data.get('user_id'), 
+#                 date=datetime.now(),  
+#                 course_name=data.get('course'),  
+#                 total_course_par=sum(data.get('par', [])),  
+#                 total_user_score=sum(data.get('score', [])), 
+#                 current_round=True  
+#             )
+#             db.session.add(scorecard)
+#             db.session.commit()
+#             return make_response(scorecard.to_dict(rules=('-user',)), 201)
+#         else:
+#             return make_response({'error': 'No data provided'}, 400)
 @app.route('/scorecard/', methods=['GET', 'POST'])
 def scorecard():
     if request.method == 'POST':
         data = request.get_json()
         if data:
-            # Now also setting course_name from the incoming request data
-            scorecard = Scorecard(
-                user_id=data.get('user_id'), 
-                date=datetime.now(),  # Consider using the date from the data if it's intended to be set by the user
-                course_name=data.get('course'),  # Assuming 'course' is the key in your payload for course name
-                total_course_par=sum(data.get('par', [])),  # Example of calculating total par from the par array
-                total_user_score=sum(data.get('score', [])),  # Example of calculating total score from the score array
-                current_round=True  # or however you determine if it's the current round
-            )
-            db.session.add(scorecard)
-            db.session.commit()
-            return make_response(scorecard.to_dict(rules=('-user',)), 201)
+            try:
+                
+                game_date = datetime.strptime(data.get('date'), '%m/%d/%Y') if 'date' in data else datetime.now()
+                
+                
+                scorecard = Scorecard(
+                    user_id=data.get('user_id'),
+                    date=game_date,
+                    course_name=data.get('course'),  
+                    total_course_par=sum(int(hole['par']) for hole in data.get('holes', [])),
+                    total_user_score=sum(int(hole['score']) for hole in data.get('holes', [])),
+                    current_round=True
+                )
+                db.session.add(scorecard)
+                db.session.flush()  # Assigns an ID to scorecard without committing the transaction
+
+                
+                for hole_data in data.get('holes', []):
+                    hole_stat = HoleStat(
+                        hole_number=hole_data.get('hole_number'),
+                        par=int(hole_data.get('par')),
+                        user_score=int(hole_data.get('score')),
+                        fairway_hit=hole_data.get('fairway_hit'),
+                        green_in_reg=hole_data.get('green_in_reg'),
+                        putts=int(hole_data.get('putts')),
+                        scorecard_id=scorecard.id
+                    )
+                    db.session.add(hole_stat)
+
+                db.session.commit()
+                return make_response(jsonify(scorecard.to_dict(rules=('-user', '-hole_stats', '-hole_stats.scorecard'))), 201)
+            except ValueError as e:
+                
+                return make_response({'error': f'Invalid numerical value - {str(e)}'}, 400)
         else:
             return make_response({'error': 'No data provided'}, 400)
 
-@app.route('/scorecard/<int:scorecard_id>', methods =['GET', 'PATCH', 'DELETE'])
+
+
+@app.route('/scorecard/<int:scorecard_id>', methods=['GET', 'PATCH', 'DELETE'])
 def scorecard_id(scorecard_id):
     scorecard = Scorecard.query.get(scorecard_id)
     if scorecard:
         if request.method == 'GET':
-            return make_response(scorecard.to_dict(), 200)
+            return make_response(scorecard.to_dict(rules=('-user',)), 200)
         elif request.method == 'PATCH':
             data = request.get_json()
             if data:
                 scorecard.user_id = data.get('user_id', scorecard.user_id)
-                scorecard.date = data.get('date', scorecard.date)
+                
+               
+                if 'date' in data and data['date'] is not None:
+                    date_str = data['date']
+                    
+                    scorecard.date = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+                
+                scorecard.course_name = data.get('course_name', scorecard.course_name)
+                scorecard.total_course_par = data.get('total_course_par', scorecard.total_course_par)
+                scorecard.total_user_score = data.get('total_user_score', scorecard.total_user_score)
+                scorecard.current_round = data.get('current_round', scorecard.current_round)
                 db.session.commit()
                 return make_response(scorecard.to_dict(rules=('-user',)), 200)
             else:
@@ -264,10 +316,10 @@ from flask import Flask, request, jsonify, make_response
 
 @app.route('/scorecard/user/<int:user_id>/<int:scorecard_id>', methods=['GET', 'PATCH', 'DELETE'])
 def scorecard_operations(user_id, scorecard_id):
-    # Authentication and authorization checks here
+   
 
     if request.method == 'GET':
-        # Fetch and return the specific scorecard
+       
         scorecard = Scorecard.query.filter_by(id=scorecard_id, user_id=user_id).first()
         if scorecard:
             return jsonify(scorecard.to_dict())
@@ -275,12 +327,12 @@ def scorecard_operations(user_id, scorecard_id):
             return make_response({'error': 'Scorecard not found'}, 404)
 
     elif request.method == 'PATCH':
-        # Update the specific scorecard
+        
         data = request.json
         scorecard = Scorecard.query.filter_by(id=scorecard_id, user_id=user_id).first()
         if scorecard:
-            # Update scorecard fields from data
-            scorecard.update_from_dict(data)  # Assuming this method updates the model from the dict
+            
+            scorecard.update_from_dict(data)  
             db.session.commit()
             return jsonify(scorecard.to_dict())
         else:
