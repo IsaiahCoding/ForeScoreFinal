@@ -5,9 +5,9 @@ import Home from './Home';
 import Signup from './Signup';
 import NavBar from './NavBar';
 import ScoreCard from './ScoreCard';
+// Ensure you've imported EditRoundForm correctly, adjusting the path as necessary
+import EditRoundForm from './User_Rounds/EditRoundForm';
 import Rounds from '/Users/isaiahaguilera/Development/code/phase-5/Fore-Score-2/client/src/components/User_Rounds/Rounds.jsx';
-
-
 import Logout from './Logout';
 import { UserContext} from '/Users/isaiahaguilera/Development/code/phase-5/Fore-Score-2/client/src/components/UserContext/UserContext.jsx';
 
@@ -51,9 +51,10 @@ function App() {
             <Route exact path="/logout" component={Logout} />
             <Route exact path="/scorecard" component={ScoreCard} />
             <Route exact path="/rounds" component={Rounds} />
+            {/* Added route for EditRoundForm with scorecardId as a URL parameter */}
+            <Route path="/edit-scorecard/:scorecardId" component={EditRoundForm} />
             <Route exact path="/">
               <Redirect to="/home" />
-              
             </Route>
           </>
         ) : (

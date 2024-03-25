@@ -226,17 +226,27 @@ def scorecard():
         else:
             return make_response({'error': 'No data provided'}, 400)
 
-@app.route('/scorecard/<int:scorecard_id>', methods =['GET', 'PATCH', 'DELETE'])
+@app.route('/scorecard/<int:scorecard_id>', methods=['GET', 'PATCH', 'DELETE'])
 def scorecard_id(scorecard_id):
     scorecard = Scorecard.query.get(scorecard_id)
     if scorecard:
         if request.method == 'GET':
-            return make_response(scorecard.to_dict(), 200)
+            return make_response(scorecard.to_dict(rules=('-user',)), 200)
         elif request.method == 'PATCH':
             data = request.get_json()
             if data:
                 scorecard.user_id = data.get('user_id', scorecard.user_id)
-                scorecard.date = data.get('date', scorecard.date)
+                
+                # Convert the date string to a datetime object before saving
+                if 'date' in data and data['date'] is not None:
+                    date_str = data['date']
+                    # Assuming the date string includes time in 'YYYY-MM-DD HH:MM:SS' format
+                    scorecard.date = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+                
+                scorecard.course_name = data.get('course_name', scorecard.course_name)
+                scorecard.total_course_par = data.get('total_course_par', scorecard.total_course_par)
+                scorecard.total_user_score = data.get('total_user_score', scorecard.total_user_score)
+                scorecard.current_round = data.get('current_round', scorecard.current_round)
                 db.session.commit()
                 return make_response(scorecard.to_dict(rules=('-user',)), 200)
             else:
