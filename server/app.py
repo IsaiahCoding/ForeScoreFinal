@@ -229,35 +229,42 @@ def scorecard():
     if request.method == 'POST':
         data = request.get_json()
         if data:
-            scorecard = Scorecard(
-                user_id=data.get('user_id'),
-                date=datetime.now(),  # Consider date from data if appropriate
-                course_name=data.get('course'),
-                total_course_par=sum(hole['par'] for hole in data.get('holes', [])),
-                total_user_score=sum(hole['score'] for hole in data.get('holes', [])),
-                current_round=True
-            )
-            db.session.add(scorecard)
-            db.session.flush()  # This flushes changes to the database to assign an ID to scorecard without committing the transaction
-
-            # Assume data['holes'] is a list of dictionaries, each with hole stats
-            for hole_data in data.get('holes', []):
-                hole_stat = HoleStat(
-                    hole_number=hole_data.get('hole_number'),
-                    par=hole_data.get('par'),
-                    user_score=hole_data.get('score'),
-                    fairway_hit=hole_data.get('fairway_hit'),
-                    green_in_reg=hole_data.get('green_in_reg'),
-                    putts=hole_data.get('putts'),
-                    scorecard_id=scorecard.id  # Now that scorecard has an ID, we can reference it
+            try:
+                
+                game_date = datetime.strptime(data.get('date'), '%m/%d/%Y') if 'date' in data else datetime.now()
+                
+                
+                scorecard = Scorecard(
+                    user_id=data.get('user_id'),
+                    date=game_date,
+                    course_name=data.get('course'),  
+                    total_course_par=sum(int(hole['par']) for hole in data.get('holes', [])),
+                    total_user_score=sum(int(hole['score']) for hole in data.get('holes', [])),
+                    current_round=True
                 )
-                db.session.add(hole_stat)
+                db.session.add(scorecard)
+                db.session.flush()  # Assigns an ID to scorecard without committing the transaction
 
-            db.session.commit()  # Now commit everything to the database
-            return make_response(scorecard.to_dict(rules=('-user', '-hole_stats', '-hole_stats.scorecard')), 201)
+                
+                for hole_data in data.get('holes', []):
+                    hole_stat = HoleStat(
+                        hole_number=hole_data.get('hole_number'),
+                        par=int(hole_data.get('par')),
+                        user_score=int(hole_data.get('score')),
+                        fairway_hit=hole_data.get('fairway_hit'),
+                        green_in_reg=hole_data.get('green_in_reg'),
+                        putts=int(hole_data.get('putts')),
+                        scorecard_id=scorecard.id
+                    )
+                    db.session.add(hole_stat)
+
+                db.session.commit()
+                return make_response(jsonify(scorecard.to_dict(rules=('-user', '-hole_stats', '-hole_stats.scorecard'))), 201)
+            except ValueError as e:
+                
+                return make_response({'error': f'Invalid numerical value - {str(e)}'}, 400)
         else:
             return make_response({'error': 'No data provided'}, 400)
-
 
 
 
@@ -272,10 +279,10 @@ def scorecard_id(scorecard_id):
             if data:
                 scorecard.user_id = data.get('user_id', scorecard.user_id)
                 
-                # Convert the date string to a datetime object before saving
+               
                 if 'date' in data and data['date'] is not None:
                     date_str = data['date']
-                    # Assuming the date string includes time in 'YYYY-MM-DD HH:MM:SS' format
+                    
                     scorecard.date = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
                 
                 scorecard.course_name = data.get('course_name', scorecard.course_name)
@@ -309,10 +316,10 @@ from flask import Flask, request, jsonify, make_response
 
 @app.route('/scorecard/user/<int:user_id>/<int:scorecard_id>', methods=['GET', 'PATCH', 'DELETE'])
 def scorecard_operations(user_id, scorecard_id):
-    # Authentication and authorization checks here
+   
 
     if request.method == 'GET':
-        # Fetch and return the specific scorecard
+       
         scorecard = Scorecard.query.filter_by(id=scorecard_id, user_id=user_id).first()
         if scorecard:
             return jsonify(scorecard.to_dict())
@@ -320,12 +327,12 @@ def scorecard_operations(user_id, scorecard_id):
             return make_response({'error': 'Scorecard not found'}, 404)
 
     elif request.method == 'PATCH':
-        # Update the specific scorecard
+        
         data = request.json
         scorecard = Scorecard.query.filter_by(id=scorecard_id, user_id=user_id).first()
         if scorecard:
-            # Update scorecard fields from data
-            scorecard.update_from_dict(data)  # Assuming this method updates the model from the dict
+            
+            scorecard.update_from_dict(data)  
             db.session.commit()
             return jsonify(scorecard.to_dict())
         else:
