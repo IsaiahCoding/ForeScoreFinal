@@ -13,8 +13,9 @@ const AddRoundForm = ({ onSave, onCancel }) => {
   };
 
   const handleCancel = () => {
-    
-    onCancel();
+    setDate('');
+    setCourse('');
+    setScore('');
     
   };
 
