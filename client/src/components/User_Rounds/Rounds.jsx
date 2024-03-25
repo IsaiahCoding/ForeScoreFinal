@@ -47,7 +47,7 @@ const Rounds = () => {
 
   return (
     <div>
-      <PageHeader />
+      
       <RoundsTable onEditRound={handleEditRound} />
       <AddRoundForm onSave={handleAddRound} onCancel={handleCancelAddRound} />
       {selectedRoundId && <EditRoundForm roundId={selectedRoundId} onRoundEdited={() => setSelectedRoundId(null)} />}
