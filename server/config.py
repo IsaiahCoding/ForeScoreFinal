@@ -9,6 +9,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from sqlalchemy import MetaData
 from flask_login import UserMixin, LoginManager, login_user, logout_user, login_required
+import bcrypt
+
 
 # Local imports
 

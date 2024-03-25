@@ -1,25 +1,41 @@
-
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
+import { UserContext } from './UserContext/UserContext'; // Import UserContext
 
 const NavBar = () => {
+  const { user } = useContext(UserContext); // Access user state from UserContext
+
   return (
-    <nav>
-      <ul>
+    <nav className="bg-green-800 p-4 rounded shadow">
+      <ul className="flex justify-between items-center">
+        {user && ( // Render "Hello, username" only if user is logged in
+          <li className="text-white font-semibold">
+            <span>Hello, {user.username}</span>
+          </li>
+        )}
         <li>
-          <Link to="/home">Home</Link>
+          <Link to="/home" className="text-slate-50 hover:text-slate-200 transition duration-300">Home</Link>
+        </li>
+        {!user && ( // Render login and signup links only if user is not logged in
+          <>
+            <li>
+              <Link to="/login" className="text-slate-50 hover:text-slate-200 transition duration-300">Login</Link>
+            </li>
+            <li>
+              <Link to="/signup" className="text-slate-50 hover:text-slate-200 transition duration-300">Signup</Link>
+            </li>
+          </>
+        )}
+        {user && ( // Render logout link if user is logged in
+          <li>
+            <Link to="/logout" className="text-slate-50 hover:text-slate-200 transition duration-300">Logout</Link>
+          </li>
+        )}
+        <li>
+          <Link to="/scorecard" className="text-slate-50 hover:text-slate-200 transition duration-300">Scorecard</Link>
         </li>
         <li>
-          <Link to="/login">Login</Link>
-        </li>
-        <li>
-          <Link to="/signup">Signup</Link>
-        </li>
-        <li>
-          <Link to="/scorecard">Scorecard</Link>
-        </li>
-        <li>
-          <Link to="/logout">Logout</Link>
+          <Link to="/rounds" className="text-slate-50 hover:text-slate-200 transition duration-300">Rounds</Link>
         </li>
       </ul>
     </nav>

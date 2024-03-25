@@ -8,6 +8,8 @@ from flask_restful import Resource
 from datetime import datetime
 # Local imports
 from config import app, db, api
+import bcrypt
+
 # Add your model imports
 from models import User, Club, ClubDistance, ClubDistanceJoin, Scorecard, HoleStat
 
@@ -131,7 +133,7 @@ api.add_resource(Login, '/login', endpoint='login')
 
 class Logout(Resource):
     def delete(self):
-        session['user_id'] = None
+        session.pop('user_id', None)
         return make_response({'message': 'Logged out'}, 200)
 
 api.add_resource(Logout, '/logout', endpoint='logout')
@@ -245,6 +247,56 @@ def scorecard_id(scorecard_id):
             return make_response({'message': 'Scorecard deleted'}, 200)
     else:
         return make_response({'error': 'Scorecard not found'}, 404)
+################################################################Route of scorecard by user_id
+@app.route('/scorecard/user/<int:user_id>', methods=['GET'])
+def scorecards_by_user(user_id):
+    scorecards = Scorecard.query.filter_by(user_id=user_id).all()
+
+    if scorecards:
+        scorecards_dict = [scorecard.to_dict() for scorecard in scorecards]
+        
+        return make_response(jsonify(scorecards_dict), 200)
+    else:
+       
+        return make_response({'error': 'No scorecards found for the user'}, 404)
+# Able to Read,Edit,Delete scorecard byt userid by scorecardId
+from flask import Flask, request, jsonify, make_response
+
+@app.route('/scorecard/user/<int:user_id>/<int:scorecard_id>', methods=['GET', 'PATCH', 'DELETE'])
+def scorecard_operations(user_id, scorecard_id):
+    # Authentication and authorization checks here
+
+    if request.method == 'GET':
+        # Fetch and return the specific scorecard
+        scorecard = Scorecard.query.filter_by(id=scorecard_id, user_id=user_id).first()
+        if scorecard:
+            return jsonify(scorecard.to_dict())
+        else:
+            return make_response({'error': 'Scorecard not found'}, 404)
+
+    elif request.method == 'PATCH':
+        # Update the specific scorecard
+        data = request.json
+        scorecard = Scorecard.query.filter_by(id=scorecard_id, user_id=user_id).first()
+        if scorecard:
+            # Update scorecard fields from data
+            scorecard.update_from_dict(data)  # Assuming this method updates the model from the dict
+            db.session.commit()
+            return jsonify(scorecard.to_dict())
+        else:
+            return make_response({'error': 'Scorecard not found'}, 404)
+
+    elif request.method == 'DELETE':
+        # Delete the specific scorecard
+        scorecard = Scorecard.query.filter_by(id=scorecard_id, user_id=user_id).first()
+        if scorecard:
+            db.session.delete(scorecard)
+            db.session.commit()
+            return make_response({'message': 'Scorecard deleted successfully'}, 200)
+        else:
+            return make_response({'error': 'Scorecard not found'}, 404)
+
+
 
 @app.route('/holestats', methods=['GET','POST'])
 def holestats():
@@ -308,4 +360,3 @@ def holestat_id(holestat_id):
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
-
