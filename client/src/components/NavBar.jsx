@@ -35,7 +35,7 @@ const NavBar = () => {
               <Link to="/rounds" className="text-slate-50 hover:text-slate-200 transition duration-300">Rounds</Link>
             </li>
             <li>
-              <Link to="/update-username" className="text-slate-50 hover:text-slate-200 transition duration-300">Update Username</Link>
+              <Link to="/update-username" className="text-slate-50 hover:text-slate-200 transition duration-300">User Info</Link>
             </li>
             <li>
               <Link to="/logout" className="text-slate-50 hover:text-slate-200 transition duration-300">Logout</Link>
