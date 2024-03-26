@@ -35,13 +35,13 @@ class User(db.Model, SerializerMixin):
         return bcrypt.check_password_hash(
             self._password_hash, password.encode('utf-8'))
     
-    # @validates('email')
-    # def validate_email(self, key, value):
-    #     try:
-    #         validate_email(value)
-    #     except EmailNotValidError as e:
-    #         raise ValueError(str(e))
-    #     return(value)
+    @validates('email')
+    def validate_email(self, key, value):
+        try:
+            validate_email(value)
+        except EmailNotValidError as e:
+            raise ValueError(str(e))
+        return(value)
     
     serialize_rules = ('-password_hash', '-scorecards.user', '-club_distances.user')
         

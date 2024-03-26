@@ -78,16 +78,15 @@ def user_id(user_id):
         if request.method == 'PATCH':
             data = request.get_json()
             if data:
-                # Check if currentPassword and newPassword are provided for password update
+               
                 if 'currentPassword' in data and 'newPassword' in data:
-                    # Use the authenticate method to verify the current password
+                    
                     if not user.authenticate(data['currentPassword']):
                         return make_response({'error': 'Current password is incorrect'}, 403)
                     
-                    # Use the password_hash setter to update the password
                     user.password_hash = data['newPassword']
 
-                # Continue to update other user fields as before
+                
                 user.name = data.get('name', user.name)
                 user.username = data.get('username', user.username)
                 user.email = data.get('email', user.email)

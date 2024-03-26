@@ -34,8 +34,8 @@ function Signup() {
     .then(data => {
       if (data.user) {
         setUser(data.user);
-        localStorage.setItem('token', data.token); // Adjust based on your actual token key
-        history.push('/scorecard'); // Adjust redirect as necessary
+        localStorage.setItem('token', data.token); 
+        history.push('/login'); 
       }
     })
     .catch(error => console.error('Error:', error));
@@ -92,10 +92,10 @@ function Signup() {
           Signup
         </button>
         <p className="mt-4 text-center text-sm text-gray-50">
-          Already have an account? <a href="/login" className="text-indigo-500">Login</a> {/* Adjust link as needed */}
+          Already have an account? <a href="/login" className="text-indigo-500">Login</a>
         </p>
         <p className="text-center text-sm text-gray-50">
-          Forgot your password? <a href="/reset" className="text-indigo-500">Reset</a> {/* Adjust link as needed */}
+          Forgot your password? <a href="/reset" className="text-indigo-500">Reset</a>
         </p>
       </form>
     </div>

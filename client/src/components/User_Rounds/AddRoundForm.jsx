@@ -2,44 +2,42 @@ import React, { useState, useContext } from 'react';
 import PageHeader from './PageHeader';
 import { UserContext } from '/Users/isaiahaguilera/Development/code/phase-5/Fore-Score-2/client/src/components/UserContext/UserContext.jsx';
 
-const AddRoundForm = ({ onSave, onCancel }) => {
+const AddRoundForm = ({ onSave, onCancel, user }) => {
   const [date, setDate] = useState('');
   const [course, setCourse] = useState('');
   const [score, setScore] = useState('');
-  const { user } = useContext(UserContext);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!user) {
-      console.error('No logged-in user found');
-      return;
-    }
-
+    // Directly using 'user' prop passed down from Rounds component
     const dataToSend = {
+      user_id: user.id,
       date,
       course,
       total_user_score: parseInt(score, 10),
-      user_id: user.id,
     };
 
-    fetch('/past_scorecard', { // Note the updated endpoint
+    fetch('/past_scorecard', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionStorage.getItem('authToken')}`,
+        'Authorization': `Bearer ${user.token}`, // Assuming 'token' is available in 'user' context
       },
       body: JSON.stringify(dataToSend),
     })
     .then(response => {
-      if (response.ok) {
-        return response.json();
+      if (!response.ok) {
+        throw new Error('Network response was not ok.');
       }
-      throw new Error('Network response was not ok.');
+      return response.json();
     })
     .then(data => {
       console.log('Success:', data);
-      onSave(data); // Trigger any additional actions on save
+      onSave(data); // Call onSave to handle logic after successful save
+      setDate('');
+      setCourse('');
+      setScore(''); // Reset form fields after successful save
     })
     .catch((error) => {
       console.error('Error:', error);
@@ -47,16 +45,14 @@ const AddRoundForm = ({ onSave, onCancel }) => {
   };
 
   const handleCancel = () => {
-    onCancel(); // Trigger any additional actions on cancel
+    onCancel(); // Call onCancel to handle logic on cancel
     setDate('');
     setCourse('');
-    setScore('');
+    setScore(''); // Reset form fields on cancel
   };
-
 
   return (
     <div>
-      
       <PageHeader />
       <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
         <div className="mb-4">
