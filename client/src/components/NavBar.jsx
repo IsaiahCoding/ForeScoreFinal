@@ -1,44 +1,73 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { UserContext } from './UserContext/UserContext'; // Ensure the path to UserContext is correct
+import { UserContext } from './UserContext/UserContext';
+import { Button } from "@material-tailwind/react";
 
 const NavBar = () => {
-  const { user } = useContext(UserContext); // Access user state from UserContext
+  const { user } = useContext(UserContext);
 
   return (
     <nav className="bg-green-800 p-4 rounded shadow">
-      <ul className="flex justify-between items-center">
+      <ul className="flex justify-between items-center text-white">
         {user && (
-          <li className="text-white font-semibold">
+          <li className="font-semibold">
             <span>Hello, {user.username}</span>
           </li>
         )}
         <li>
-          <Link to="/home" className="text-slate-50 hover:text-slate-200 transition duration-300">Home</Link>
+          <Link to="/home">
+            <Button color="gray" size="lg" ripple={true}>
+              Home
+            </Button>
+          </Link>
         </li>
         {!user && (
           <>
             <li>
-              <Link to="/login" className="text-slate-50 hover:text-slate-200 transition duration-300">Login</Link>
+              <Link to="/login">
+                <Button color="gray" size="lg" ripple={true}>
+                  Login
+                </Button>
+              </Link>
             </li>
             <li>
-              <Link to="/signup" className="text-slate-50 hover:text-slate-200 transition duration-300">Signup</Link>
+              <Link to="/signup">
+                <Button color="gray" size="lg" ripple={true}>
+                  Signup
+                </Button>
+              </Link>
             </li>
           </>
         )}
         {user && (
           <>
             <li>
-              <Link to="/scorecard" className="text-slate-50 hover:text-slate-200 transition duration-300">Scorecard</Link>
+              <Link to="/scorecard">
+                <Button color="gray" size="lg" ripple={true}>
+                  Scorecard
+                </Button>
+              </Link>
             </li>
             <li>
-              <Link to="/rounds" className="text-slate-50 hover:text-slate-200 transition duration-300">Rounds</Link>
+              <Link to="/rounds">
+                <Button color="gray" size="lg" ripple={true}>
+                  Rounds
+                </Button>
+              </Link>
             </li>
             <li>
-              <Link to="/update-username" className="text-slate-50 hover:text-slate-200 transition duration-300">User Info</Link>
+              <Link to="/update-username">
+                <Button color="gray" size="lg" ripple={true}>
+                  User Info
+                </Button>
+              </Link>
             </li>
             <li>
-              <Link to="/logout" className="text-slate-50 hover:text-slate-200 transition duration-300">Logout</Link>
+              <Link to="/logout">
+                <Button color="gray" size="lg" ripple={true}>
+                  Logout
+                </Button>
+              </Link>
             </li>
           </>
         )}
