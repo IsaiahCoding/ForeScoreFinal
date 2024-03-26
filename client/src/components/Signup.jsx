@@ -51,7 +51,7 @@ function Signup() {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="flex justify-center items-center h-screen bg-gray-100">
       <Card className="max-w-md w-full">
         <CardHeader
           variant="gradient"
@@ -116,8 +116,18 @@ function Signup() {
           >
             Signup
           </Button>
-          <Typography variant="medium" className="mt-4 text-center text-bluegray-900">
-            Already have an account? <a href="/login" className="text-indigo-500">Login</a>
+          <Typography variant="small" className="mt-6 flex justify-center">
+          
+          
+            Already have an account? 
+            <Typography
+            as = "a"
+            href = "/login"
+            variant = "small"
+            color = "blue-gray"
+            className = "ml-1 font-bold">
+              Login
+            </Typography>
           </Typography>
         </CardFooter>
       </Card>
