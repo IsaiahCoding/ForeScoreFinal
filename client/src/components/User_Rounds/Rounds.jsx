@@ -8,17 +8,17 @@ import useAuth from '/Users/isaiahaguilera/Development/code/phase-5/Fore-Score-2
 
 const Rounds = () => {
   const [selectedRoundId, setSelectedRoundId] = useState(null);
-  // useAuth hook is used here, assuming it provides the current user context
+  
   const { user } = useAuth(); 
 
   const handleEditRound = (roundId) => {
     setSelectedRoundId(roundId);
   };
 
-  // This method is now simplified to handle UI logic after a round has been successfully added
+  
   const onRoundAdded = (newRound) => {
     console.log('Round added:', newRound);
-    // Implement any additional logic needed after adding a round, such as refreshing the list of rounds
+    
   };
 
   const handleCancelAddRound = () => {

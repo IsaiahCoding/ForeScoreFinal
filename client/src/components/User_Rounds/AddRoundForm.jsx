@@ -22,7 +22,7 @@ const AddRoundForm = ({ onSave, onCancel, user }) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${user.token}`, // Assuming 'token' is available in 'user' context
+        'Authorization': `Bearer ${user.token}`, 
       },
       body: JSON.stringify(dataToSend),
     })
@@ -34,10 +34,10 @@ const AddRoundForm = ({ onSave, onCancel, user }) => {
     })
     .then(data => {
       console.log('Success:', data);
-      onSave(data); // Call onSave to handle logic after successful save
+      onSave(data); 
       setDate('');
       setCourse('');
-      setScore(''); // Reset form fields after successful save
+      setScore('');
     })
     .catch((error) => {
       console.error('Error:', error);
@@ -45,10 +45,10 @@ const AddRoundForm = ({ onSave, onCancel, user }) => {
   };
 
   const handleCancel = () => {
-    onCancel(); // Call onCancel to handle logic on cancel
+    onCancel(); 
     setDate('');
     setCourse('');
-    setScore(''); // Reset form fields on cancel
+    setScore(''); 
   };
 
   return (
