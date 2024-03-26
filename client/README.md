@@ -31,6 +31,9 @@ ForeScore is a comprehensive web application designed to enhance your golfing ex
 - Enter Past Score form allows logged in user to add past scores and update their past rounds table.
 - Route also renders users Average Score for all past rounds entered.
 
+**User Info Route**
+- Allows the logged in user to update their username
+
 
 
 
