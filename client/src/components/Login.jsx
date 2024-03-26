@@ -1,7 +1,7 @@
 
 import React, { useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
-import { UserContext } from './UserContext/UserContext'; // Correct the import path as necessary
+import { UserContext } from './UserContext/UserContext';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -21,8 +21,8 @@ function Login() {
     .then((response) => {
       if (response.ok) {
         return response.json().then((user) => {
-          setUser(user); // Assuming setUser expects the user object
-          sessionStorage.setItem('user', JSON.stringify(user)); // Store the user object
+          setUser(user); 
+          sessionStorage.setItem('user', JSON.stringify(user)); 
           history.push('/home');
         });
       } else {
