@@ -1,24 +1,58 @@
-import React, { useState } from 'react';
-import PageHeader from './PageHeader'; // Import PageHeader component
+import React, { useState, useContext } from 'react';
+import PageHeader from './PageHeader';
+import { UserContext } from '/Users/isaiahaguilera/Development/code/phase-5/Fore-Score-2/client/src/components/UserContext/UserContext.jsx';
 
 const AddRoundForm = ({ onSave, onCancel }) => {
   const [date, setDate] = useState('');
   const [course, setCourse] = useState('');
   const [score, setScore] = useState('');
+  const { user } = useContext(UserContext);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    onSave({ date, course, score });
-    
+
+    if (!user) {
+      console.error('No logged-in user found');
+      return;
+    }
+
+    const dataToSend = {
+      date,
+      course,
+      total_user_score: parseInt(score, 10),
+      user_id: user.id,
+    };
+
+    fetch('/past_scorecard', { // Note the updated endpoint
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionStorage.getItem('authToken')}`,
+      },
+      body: JSON.stringify(dataToSend),
+    })
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error('Network response was not ok.');
+    })
+    .then(data => {
+      console.log('Success:', data);
+      onSave(data); // Trigger any additional actions on save
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
   };
 
   const handleCancel = () => {
+    onCancel(); // Trigger any additional actions on cancel
     setDate('');
     setCourse('');
     setScore('');
-    
   };
+
 
   return (
     <div>

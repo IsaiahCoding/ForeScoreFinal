@@ -224,10 +224,15 @@ def club_distance_id(club_distance_id):
 #             return make_response(scorecard.to_dict(rules=('-user',)), 201)
 #         else:
 #             return make_response({'error': 'No data provided'}, 400)
-@app.route('/scorecard/', methods=['GET', 'POST'])
+@app.route('/scorecard', methods=['GET', 'POST'])
 def scorecard():
-    if request.method == 'POST':
+    if request.method == 'GET':
+        scorecards = Scorecard.query.all()
+        scorecards_dict = [scorecard.to_dict(rules=('-user',)) for scorecard in scorecards]
+        return make_response(scorecards_dict, 200)
+    elif request.method == 'POST':
         data = request.get_json()
+        print(data)
         if data:
             try:
                 
@@ -265,6 +270,37 @@ def scorecard():
                 return make_response({'error': f'Invalid numerical value - {str(e)}'}, 400)
         else:
             return make_response({'error': 'No data provided'}, 400)
+################################################################
+#####PAST USER SCORECARDS ######################################
+@app.route('/past_scorecard', methods=['GET', 'POST'])  
+def past_scorecard():
+    if request.method == 'GET':
+        
+        scorecards = Scorecard.query.all()
+        scorecards_dict = [scorecard.to_dict(rules=('-user',)) for scorecard in scorecards]
+        return jsonify(scorecards_dict), 200
+    elif request.method == 'POST':
+        data = request.get_json()
+        if data and all(k in data for k in ('user_id', 'date', 'course', 'total_user_score')):
+            try:
+                game_date = datetime.strptime(data['date'], '%m/%d/%Y')
+            except ValueError:
+                return make_response({'error': 'Invalid date format'}, 400)
+
+            # Creating a new scorecard with the provided information
+            scorecard = Scorecard(
+                user_id=data['user_id'],
+                date=game_date,
+                course_name=data['course'],  
+                total_user_score=data['total_user_score'],
+            )
+            
+            db.session.add(scorecard)
+            db.session.commit()
+            
+            return make_response(jsonify(scorecard.to_dict(rules=('-user',))), 201)
+        else:
+            return make_response({'error': 'Missing required fields'}, 400)
 
 
 
