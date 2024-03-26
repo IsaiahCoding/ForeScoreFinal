@@ -46,7 +46,7 @@ function ScoreCardForm() {
       });
       if (response.ok) {
         const newScorecard = await response.json();
-        history.push('/scorecard');
+        history.push('/rounds');
       } else {
         console.error('Failed to submit scorecard');
       }
