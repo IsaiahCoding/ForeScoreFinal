@@ -7,12 +7,12 @@ const NavBar = () => {
   const { user } = useContext(UserContext);
 
   return (
-    <nav className="bg-green-800 p-4 rounded shadow">
+    <nav className="p-4 rounded shadow">
       <ul className="flex justify-between items-center text-white">
         {user && (
           <li className="font-semibold">
-            <span>Hello, {user.username}</span>
-          </li>
+          <span className="text-gray-700">Hello, {user.username}</span>
+        </li>
         )}
         <li>
           <Link to="/home">
