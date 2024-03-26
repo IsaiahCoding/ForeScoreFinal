@@ -10,6 +10,8 @@ from datetime import datetime
 from config import app, db, api
 import bcrypt
 
+
+
 # Add your model imports
 from models import User, Club, ClubDistance, ClubDistanceJoin, Scorecard, HoleStat
 
@@ -69,20 +71,29 @@ def users():
     return make_response(users_dict, 200)
 
 
-@app.route('/users/<int:user_id>', methods =['GET', 'PATCH', 'DELETE'])
+@app.route('/users/<int:user_id>', methods=['GET', 'PATCH', 'DELETE'])
 def user_id(user_id):
     user = User.query.get(user_id)
     if user:
-        if request.method == 'GET':
-            return make_response(user.to_dict(rules=('-club_distances','-scorecards',)), 200)
-        elif request.method == 'PATCH':
+        if request.method == 'PATCH':
             data = request.get_json()
             if data:
+                # Check if currentPassword and newPassword are provided for password update
+                if 'currentPassword' in data and 'newPassword' in data:
+                    # Use the authenticate method to verify the current password
+                    if not user.authenticate(data['currentPassword']):
+                        return make_response({'error': 'Current password is incorrect'}, 403)
+                    
+                    # Use the password_hash setter to update the password
+                    user.password_hash = data['newPassword']
+
+                # Continue to update other user fields as before
                 user.name = data.get('name', user.name)
                 user.username = data.get('username', user.username)
                 user.email = data.get('email', user.email)
+                
                 db.session.commit()
-                return make_response(user.to_dict(rules=('-club_distances','-scorecards',)), 200)
+                return make_response(user.to_dict(rules=('-club_distances', '-scorecards',)), 200)
             else:
                 return make_response({'error': 'No data provided'}, 400)
         elif request.method == 'DELETE':
