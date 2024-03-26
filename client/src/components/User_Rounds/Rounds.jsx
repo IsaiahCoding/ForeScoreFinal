@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import PageHeader from './PageHeader';
 import RoundsTable from './RoundsTable';
@@ -9,37 +8,17 @@ import useAuth from '/Users/isaiahaguilera/Development/code/phase-5/Fore-Score-2
 
 const Rounds = () => {
   const [selectedRoundId, setSelectedRoundId] = useState(null);
+  // useAuth hook is used here, assuming it provides the current user context
   const { user } = useAuth(); 
 
   const handleEditRound = (roundId) => {
     setSelectedRoundId(roundId);
   };
 
-  const handleAddRound = async (roundData) => {
-    const dataToSend = { ...roundData, user_id: user.id };
-  
-    try {
-      const response = await fetch('/scorecard', { 
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          
-          'Authorization': `Bearer ${user.token}`,
-        },
-        body: JSON.stringify(dataToSend),
-      });
-  
-      if (response.ok) {
-        const newScorecard = await response.json();
-        console.log('New scorecard saved:', newScorecard);
-        
-      } else {
-        
-        console.error('Failed to save the scorecard');
-      }
-    } catch (error) {
-      console.error('Error saving the scorecard:', error);
-    }
+  // This method is now simplified to handle UI logic after a round has been successfully added
+  const onRoundAdded = (newRound) => {
+    console.log('Round added:', newRound);
+    // Implement any additional logic needed after adding a round, such as refreshing the list of rounds
   };
 
   const handleCancelAddRound = () => {
@@ -48,9 +27,9 @@ const Rounds = () => {
 
   return (
     <div>
-       <div style={{ marginBottom: '20px' }} />
+      <div style={{ marginBottom: '20px' }} />
       <RoundsTable onEditRound={handleEditRound} />
-      <AddRoundForm onSave={handleAddRound} onCancel={handleCancelAddRound} />
+      <AddRoundForm onSave={onRoundAdded} onCancel={handleCancelAddRound} user={user} />
       {selectedRoundId && <EditRoundForm roundId={selectedRoundId} onRoundEdited={() => setSelectedRoundId(null)} />}
       <AverageScore />
     </div>
