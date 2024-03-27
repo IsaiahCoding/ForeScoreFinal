@@ -18,8 +18,8 @@ ForeScore is a comprehensive web application designed to enhance your golfing ex
 # Features
 **Home:**
  - Simple welcome page is user is not authenticated.
- -Displays graph information of logged in users scores over time.
- -Displays users average score.
+ - Displays graph information of logged in users scores over time.
+ - Displays users average score.
 
 
 **Scorecard:**
