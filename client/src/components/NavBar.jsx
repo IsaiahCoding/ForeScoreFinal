@@ -56,6 +56,13 @@ const NavBar = () => {
               </Link>
             </li>
             <li>
+              <Link to="/clubs">
+                <Button color="gray" size="lg" ripple={true}>
+                  Clubs
+                </Button>
+              </Link>
+            </li>
+            <li>
               <Link to="/update-username">
                 <Button color="gray" size="lg" ripple={true}>
                   User Info

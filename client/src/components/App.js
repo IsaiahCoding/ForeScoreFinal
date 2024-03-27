@@ -9,6 +9,7 @@ import EditRoundForm from './User_Rounds/EditRoundForm';
 import Rounds from '/Users/isaiahaguilera/Development/code/phase-5/Fore-Score-2/client/src/components/User_Rounds/Rounds.jsx';
 import Logout from './Logout';
 import UpdateUsername from './UpdateUsername';
+import ClubPage from './User_Clubs/ClubsPage';
 import { UserContext } from '/Users/isaiahaguilera/Development/code/phase-5/Fore-Score-2/client/src/components/UserContext/UserContext.jsx';
 
 function App() {
@@ -61,6 +62,7 @@ function App() {
         <Route exact path="/rounds" component={Rounds} />
         <Route exact path="/update-username" component={UpdateUsername} />
         <Route path="/edit-scorecard/:scorecardId" component={EditRoundForm} />
+        <Route exact path="/clubs" component={ClubPage} />
         <Route exact path="/">
           <Redirect to="/home" />
         </Route>
