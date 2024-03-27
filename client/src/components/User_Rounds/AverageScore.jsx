@@ -30,7 +30,6 @@ const AverageScore = () => {
     }
   }, [user]);
 
-  // Function to determine the background color based on the average score
   const bgColorClass = () => {
     if (averageScore < 79) return "bg-green-500";
     if (averageScore < 89) return "bg-yellow-500";
