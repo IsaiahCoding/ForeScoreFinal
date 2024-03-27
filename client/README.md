@@ -38,6 +38,9 @@ ForeScore is a comprehensive web application designed to enhance your golfing ex
 - Allows the logged in user to edit a submission from their past rounds table.
 - User can edit the date, course played and their score updating their average score.
 
+**Clubs**
+- Allows users to add clubs to their profile.
+
 
 **User Info Route**
 - Allows the logged in user to update their username and password.
