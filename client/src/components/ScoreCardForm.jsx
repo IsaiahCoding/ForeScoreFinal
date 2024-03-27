@@ -73,6 +73,11 @@ function GolfScoreCard() {
     const filteredScore = score.filter(s => !isNaN(parseInt(s)));
     return filteredScore.reduce((acc, val) => acc + parseInt(val), 0);
   }, [score]);
+  
+  const totalPutts = useMemo(() => {
+    const filteredPutts = putts.filter(p => !isNaN(parseInt(p)));
+    return filteredPutts.reduce((acc, val) => acc + parseInt(val), 0);
+  }, [putts]);
 
   return (
     <div className='bg-gray-100'>
@@ -181,6 +186,9 @@ function GolfScoreCard() {
         <div className="col-span-1 p-3 bg-blue-500 text-white font-bold text-lg text-center rounded-lg">Total</div>
         <div className="col-span-1 p-3 bg-blue-500 text-white font-bold text-lg text-center rounded-lg">{totalPar}</div>
         <div className="col-span-1 p-3 bg-blue-500 text-white font-bold text-lg text-center rounded-lg">{totalScore}</div>
+        <div className="col-span-1"></div>
+        <div className="col-span-1"></div>
+        <div className="col-span-1 p-3 bg-blue-500 text-white font-bold text-lg text-center rounded-lg">{totalPutts}</div>
       </div>
 
         <div className="mt-6">
