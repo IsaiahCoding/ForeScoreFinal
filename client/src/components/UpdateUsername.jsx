@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { UserContext } from '/Users/isaiahaguilera/Development/code/phase-5/Fore-Score-2/client/src/components/UserContext/UserContext.jsx';
-
+import { Input, Button } from "@material-tailwind/react";
 function UpdateUserProfile() {
     const { user, setUser } = useContext(UserContext);
     const [currentPassword, setCurrentPassword] = useState(''); // State for current password
@@ -27,7 +27,7 @@ function UpdateUserProfile() {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
-                    // Include authorization header if needed
+                    
                 },
                 body: JSON.stringify({
                     currentPassword, // Send the current password for verification
@@ -56,44 +56,52 @@ function UpdateUserProfile() {
     };
 
     return (
-        <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-            <h2 className="block text-gray-700 text-lg font-bold mb-2">Update Profile</h2>
+        <div className="bg-gay-100">
+        <div className="max-w-md mx-auto bg-green-500 bg-opacity-60 p-6 rounded-lg shadow-lg border border-green-600">
+            <h2 className="text-center text-2xl font-bold mb-4 text-gray-700">Update Profile</h2>
             {error && <p className="text-red-500 text-xs italic">{error}</p>}
             {success && <p className="text-green-500 text-xs italic">{success}</p>}
-            <div className="mb-4">
-                <input
+            <div className="mb-4 bg-white">
+                <Input
                     type="text"
                     value={newUsername}
-                    onChange={handleUsernameChange}
-                    placeholder="Enter new username"
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    onChange={(e) => setNewUsername(e.target.value)}
+                    label="New Username"
+                    color="teal"
                 />
             </div>
-            <div className="mb-4">
-                <input
+            <div className="mb-4 bg-white">
+                <Input
                     type="password"
                     value={currentPassword}
-                    onChange={handleCurrentPasswordChange}
-                    placeholder="Current password"
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    label="Current Password"
+                    color="teal"
                 />
             </div>
-            <div className="mb-4">
-                <input
+            <div className="mb-4 bg-white">
+                <Input
                     type="password"
                     value={newPassword}
-                    onChange={handlePasswordChange}
-                    placeholder="New password"
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    label="New Password"
+                    color="teal"
                 />
             </div>
-            <button
+            <Button
+                color="teal"
+                buttonType="filled"
+                size="regular"
+                rounded={false}
+                block={true}
+                iconOnly={false}
+                ripple="light"
                 onClick={updateUserProfile}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             >
                 Update
-            </button>
+            </Button>
         </div>
+    </div>
     );
 }
 

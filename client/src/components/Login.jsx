@@ -1,3 +1,5 @@
+/////notes
+
 import React, { useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import { UserContext } from './UserContext/UserContext';
@@ -52,7 +54,7 @@ function Login() {
           className="mb-4 grid h-28 place-items-center"
         >
           <Typography variant="h3" color="white">
-            Sign In
+           Login
           </Typography>
         </CardHeader>
         <CardBody className="flex flex-col gap-4">

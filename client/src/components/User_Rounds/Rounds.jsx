@@ -8,17 +8,14 @@ import useAuth from '/Users/isaiahaguilera/Development/code/phase-5/Fore-Score-2
 
 const Rounds = () => {
   const [selectedRoundId, setSelectedRoundId] = useState(null);
-  
-  const { user } = useAuth(); 
+  const { user } = useAuth();
 
   const handleEditRound = (roundId) => {
     setSelectedRoundId(roundId);
   };
 
-  
   const onRoundAdded = (newRound) => {
     console.log('Round added:', newRound);
-    
   };
 
   const handleCancelAddRound = () => {
@@ -26,12 +23,21 @@ const Rounds = () => {
   };
 
   return (
-    <div>
-      <div style={{ marginBottom: '20px' }} />
-      <RoundsTable onEditRound={handleEditRound} />
-      <AddRoundForm onSave={onRoundAdded} onCancel={handleCancelAddRound} user={user} />
+    <div className="container mx-auto px-4">
+      <div className="mb-8">
+      </div>
+      <div className="flex flex-wrap -mx-4">
+        <div className="w-full lg:w-1/2 px-4 mb-4 lg:mb-0">
+          <RoundsTable onEditRound={handleEditRound} />
+        </div>
+        <div className="w-full lg:w-1/2 px-4">
+          <AddRoundForm onSave={onRoundAdded} onCancel={handleCancelAddRound} user={user} />
+          <div className="mt-8">
+            <AverageScore />
+          </div>
+        </div>
+      </div>
       {selectedRoundId && <EditRoundForm roundId={selectedRoundId} onRoundEdited={() => setSelectedRoundId(null)} />}
-      <AverageScore />
     </div>
   );
 };

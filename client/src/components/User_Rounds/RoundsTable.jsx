@@ -1,12 +1,12 @@
-
 import React, { useState, useEffect } from 'react';
 import useAuth from '../UserAuth/UserAuth';
-import { useHistory } from 'react-router-dom'; // To navigate to the edit form
+import { useHistory } from 'react-router-dom'; 
+import { Button } from "@material-tailwind/react";
 
 const RoundsTable = () => {
   const [rounds, setRounds] = useState([]);
   const { user } = useAuth();
-  const history = useHistory(); // For navigating to the edit page
+  const history = useHistory();
 
   useEffect(() => {
     if (!user?.id) {
@@ -30,8 +30,7 @@ const RoundsTable = () => {
   }, [user?.id]);
 
   const handleEdit = (scorecardId) => {
-    // Navigate to a specific route for editing, passing the scorecardId as state or as part of the URL
-    history.push(`/edit-scorecard/${scorecardId}`); // Adjust the path as necessary
+    history.push(`/edit-scorecard/${scorecardId}`);
   };
 
   const handleDelete = async (scorecardId) => {
@@ -42,7 +41,6 @@ const RoundsTable = () => {
       if (!response.ok) {
         throw new Error('Failed to delete scorecard');
       }
-      // Filter out the deleted scorecard from the rounds state
       setRounds(rounds.filter((round) => round.id !== scorecardId));
     } catch (error) {
       console.error('Error deleting scorecard:', error);
@@ -51,47 +49,59 @@ const RoundsTable = () => {
 
   return (
     <div className="bg-gray-100">
-    <div className="max-w-4xl mx-auto bg-green-800 p-6 rounded-lg shadow-lg">
-      <h2 className="text-center text-2xl font-bold mb-4" style={{ color: '#f8fafc' }}>Past Rounds</h2>
-      <div className="overflow-x-auto">
-        <table className="table-auto w-full">
-          <thead className="text-slate-50">
-            <tr>
-              <th className="px-4 py-2">Date</th>
-              <th className="px-4 py-2">Golf Course</th>
-              <th className="px-4 py-2">Score</th>
-              <th className="px-4 py-2">Edit</th>
-              <th className="px-4 py-2">Delete</th>
-            </tr>
-          </thead>
-          <tbody className="text-slate-950">
-            {rounds.map(round => (
-              <tr key={round.id} className="bg-slate-50 border-b">
-                <td className="px-4 py-2">{round.date}</td>
-                <td className="px-4 py-2">{round.course_name}</td>
-                <td className="px-4 py-2">{round.total_user_score}</td>
-                <td className="px-4 py-2">
-                  <button
-                    onClick={() => handleEdit(round.id)}
-                    className="bg-zinc-700 hover:bg-slate-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300"
-                  >
-                    Edit
-                  </button>
-                </td>
-                <td className="px-4 py-2">
-                  <button
-                    onClick={() => handleDelete(round.id)}
-                    className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300"
-                  >
-                    Delete
-                  </button>
-                </td>
+      <div className="max-w-4xl mx-auto bg-green-500 bg-opacity-60 p-6 rounded-lg shadow-lg border border-green-600">
+        <h2 className="text-center text-2xl font-bold mb-4 text-gray-700">ForeScore: Past Rounds</h2>
+        <div className="overflow-x-auto">
+          <table className="table-auto w-full">
+            <thead>
+              <tr className="bg-teal-500 text-white">
+                <th className="px-4 py-2">Date</th>
+                <th className="px-4 py-2">Golf Course</th>
+                <th className="px-4 py-2">Score</th>
+                <th className="px-4 py-2">Edit</th>
+                <th className="px-4 py-2">Delete</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {rounds.map(round => (
+                <tr key={round.id} className="bg-white border-b">
+                  <td className="px-4 py-2 text-slate-900">{round.date}</td>
+                  <td className="px-4 py-2 text-slate-900">{round.course_name}</td>
+                  <td className="px-4 py-2 text-slate-900">{round.total_user_score}</td>
+                  <td className="px-4 py-2">
+                    <Button
+                      color="blue"
+                      buttonType="gradient"
+                      size="regular"
+                      rounded={true}
+                      block={false}
+                      iconOnly={false}
+                      ripple={true}
+                      onClick={() => handleEdit(round.id)}
+                    >
+                      Edit
+                    </Button>
+                  </td>
+                  <td className="px-4 py-2">
+                    <Button
+                      color="red"
+                      buttonType="filled"
+                      size="regular"
+                      rounded={true}
+                      block={false}
+                      iconOnly={false}
+                      ripple={true}
+                      onClick={() => handleDelete(round.id)}
+                    >
+                      Delete
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
     </div>
   );
 };
