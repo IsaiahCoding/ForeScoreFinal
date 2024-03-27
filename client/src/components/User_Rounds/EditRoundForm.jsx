@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import { UserContext } from '/Users/isaiahaguilera/Development/code/phase-5/Fore-Score-2/client/src/components/UserContext/UserContext.jsx'; // Import UserContext
+import { UserContext } from '/Users/isaiahaguilera/Development/code/phase-5/Fore-Score-2/client/src/components/UserContext/UserContext.jsx';
+import { Button, Input } from "@material-tailwind/react";
 
 const EditRoundForm = () => {
-  const { scorecardId } = useParams(); // Make sure this matches your route parameter
-  const { user } = useContext(UserContext); // Extract user from UserContext
+  const { scorecardId } = useParams();
+  const { user } = useContext(UserContext);
   const [scorecard, setScorecard] = useState({
     date: '',
     course_name: '',
@@ -13,12 +14,11 @@ const EditRoundForm = () => {
   const history = useHistory();
 
   useEffect(() => {
-    // Fetch the scorecard data using scorecardId
     if (scorecardId) {
       fetch(`/scorecard/${scorecardId}`)
-      .then(response => response.json())
-      .then(data => setScorecard(data))
-      .catch(error => console.error('Error fetching scorecard:', error));
+        .then(response => response.json())
+        .then(data => setScorecard(data))
+        .catch(error => console.error('Error fetching scorecard:', error));
     } else {
       console.error('Scorecard ID is undefined.');
     }
@@ -26,7 +26,6 @@ const EditRoundForm = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    // Make sure to check if user exists and has an ID
     if (user && user.id) {
       fetch(`/scorecard/${scorecardId}`, {
         method: 'PATCH',
@@ -35,14 +34,14 @@ const EditRoundForm = () => {
         },
         body: JSON.stringify({
           ...scorecard,
-          user_id: user.id, // Use user.id from UserContext
+          user_id: user.id,
         }),
       })
-      .then(response => {
-        if (!response.ok) throw new Error('Failed to update scorecard');
-        history.push('/rounds'); // Navigate back to the rounds page or wherever makes sense in your app
-      })
-      .catch(error => console.error('Error updating scorecard:', error));
+        .then(response => {
+          if (!response.ok) throw new Error('Failed to update scorecard');
+          history.push('/rounds');
+        })
+        .catch(error => console.error('Error updating scorecard:', error));
     } else {
       console.error('User ID is undefined.');
     }
@@ -57,50 +56,75 @@ const EditRoundForm = () => {
   };
 
   const handleCancel = () => {
-    history.goBack(); // Or navigate to a specific path if you prefer
+    history.goBack();
   };
 
   return (
-    <form onSubmit={handleFormSubmit} className="max-w-3xl mx-auto bg-green-800 p-6 rounded-lg shadow-lg">
-      <div className="mb-4">
-        <label htmlFor="date" className="block text-slate-50 text-sm font-bold mb-2">Date:</label>
-        <input
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-slate-950 leading-tight focus:outline-none focus:shadow-outline"
-          id="date"
-          name="date"
-          type="text"
-          placeholder="YYYY-MM-DD"
-          value={scorecard.date}
-          onChange={handleChange}
-        />
-      </div>
-      <div className="mb-4">
-        <label htmlFor="course_name" className="block text-slate-50 text-sm font-bold mb-2">Golf Course:</label>
-        <input
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-slate-950 leading-tight focus:outline-none focus:shadow-outline"
-          id="course_name"
-          name="course_name"
-          type="text"
-          placeholder="Enter golf course"
-          value={scorecard.course_name}
-          onChange={handleChange}
-        />
-      </div>
-      <div className="mb-4">
-        <label htmlFor="total_user_score" className="block text-slate-50 text-sm font-bold mb-2">Score:</label>
-        <input
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-slate-950 leading-tight focus:outline-none focus:shadow-outline"
-          id="total_user_score"
-          name="total_user_score"
-          type="number"
-          placeholder="Enter total score"
-          value={scorecard.total_user_score}
-          onChange={handleChange}
-        />
-      </div>
-      <button type="submit" className="bg-zinc-700 hover:bg-slate-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300">Save</button>
-      <button type="button" onClick={handleCancel} className="ml-4 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300">Cancel</button>
-    </form>
+    <div className='bg-gray-100'>
+    <div className="max-w-3xl mx-auto bg-green-500 bg-opacity-60 p-6 rounded-lg shadow-lg border border-green-600">
+      <form onSubmit={handleFormSubmit}>
+        <div className="mb-6 bg-white text-2xl">
+          <Input
+            label="Date (DD/MM/YYYY)"
+            id="date"
+            name="date"
+            type="text"
+            value={scorecard.date}
+            onChange={handleChange}
+            color="gray-900"
+          />
+        </div>
+        <div className="mb-6 bg-white">
+          <Input
+            label="Golf Course"
+            id="course_name"
+            name="course_name"
+            type="text"
+            value={scorecard.course_name}
+            onChange={handleChange}
+            color="gray-900"
+          />
+        </div>
+        <div className="mb-6 bg-white">
+          <Input
+            label="Score"
+            id="total_user_score"
+            name="total_user_score"
+            type="number"
+            value={scorecard.total_user_score}
+            onChange={handleChange}
+            color="gray-900"
+          />
+        </div>
+        <Button
+          type="submit"
+          color="blue"
+          buttonType="filled"
+          size="lg"
+          rounded={false}
+          block={false}
+          iconOnly={false}
+          ripple={true}
+        >
+          Save
+        </Button>
+        <Button
+          type="button"
+          onClick={handleCancel}
+          color="red"
+          buttonType="filled"
+          size="lg"
+          rounded={false}
+          block={false}
+          iconOnly={false}
+          ripple={true}
+          className="ml-4"
+        >
+          Cancel
+        </Button>
+      </form>
+    </div>
+    </div>
   );
 };
 
