@@ -50,7 +50,10 @@ ForeScore is a comprehensive web application designed to enhance your golfing ex
  - Python
  - Flask
  - React
+
  
+
+
  **Front End**
  - React
  - Tailwind.css
