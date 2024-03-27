@@ -6,6 +6,7 @@
 from flask import request, make_response, session, jsonify
 from flask_restful import Resource
 from datetime import datetime
+
 # Local imports
 from config import app, db, api
 import bcrypt
@@ -25,22 +26,33 @@ from models import User, Club, ClubDistance, ClubDistanceJoin, Scorecard, HoleSt
     
     
     
-
 @app.route('/clubs', methods=['GET', 'POST'])
 def club():
     if request.method == 'GET':
-        clubs = Club.query.all()
+        # Get the user ID from the session
+        user_id = session.get('user_id')
+        # Retrieve clubs associated with the user
+        clubs = Club.query.join(ClubDistanceJoin).filter(ClubDistanceJoin.user_id == user_id).all()
+        if not clubs:
+            return make_response({'message': 'No available clubs'}, 404)
+        # Serialize clubs to JSON
         clubs_dict = [club.to_dict(rules=('-club_distances',)) for club in clubs]
         return make_response(clubs_dict, 200)
     elif request.method == 'POST':
         data = request.get_json()
-        if data:
+        user_id = session.get('user_id')  # Get user ID from session
+        if data and user_id:
+            # Create a new club associated with the logged-in user
             club = Club(name=data.get('name'), brand=data.get('brand'))
             db.session.add(club)
+            # Create a new entry in the ClubDistanceJoin table to associate the club with the user
+            club_distance_join = ClubDistanceJoin(user_id=user_id, club=club)
+            db.session.add(club_distance_join)
             db.session.commit()
             return make_response(club.to_dict(rules=('-club_distances',)), 201)
         else:
             return make_response({'error': 'No data provided'}, 400)
+
 
 @app.route('/clubs/<int:club_id>', methods =['GET', 'PATCH', 'DELETE'])
 def club_id(club_id):
@@ -63,6 +75,56 @@ def club_id(club_id):
             return make_response({'message': 'Club deleted'}, 200)
     else:
         return make_response({'error': 'Club not found'}, 404)
+
+@app.route('/club_distance', methods=['GET', 'POST'])
+def club_distance():
+    if request.method == 'GET':
+        user_id = request.args.get('user_id')  
+        club_distances = (
+            ClubDistance.query
+            .join(ClubDistanceJoin)
+            .filter(ClubDistanceJoin.user_id == user_id)
+            .all()
+        )
+        if not club_distances:
+            return make_response({'message': 'No available distances'}, 404)
+        club_distances_dict = [club_distance.to_dict() for club_distance in club_distances]
+        return make_response(club_distances_dict, 200)
+    elif request.method == 'POST':
+        
+        data = request.get_json()
+        user_id = data.get('user_id') 
+        if data and user_id:
+            
+            club_distance = ClubDistance(club_id=data.get('club_id'), distance=data.get('distance'), user_id=user_id)
+            db.session.add(club_distance)
+            db.session.commit()
+            
+            return make_response(club_distance.to_dict(), 201)
+        else:
+            return make_response({'error': 'No data provided'}, 400)
+
+@app.route('/club_distance/<int:club_distance_id>', methods =['GET', 'PATCH', 'DELETE'])
+def club_distance_id(club_distance_id):
+    club_distance = ClubDistance.query.get(club_distance_id)
+    if club_distance:
+        if request.method == 'GET':
+            return make_response(club_distance.to_dict(rules = '',), 200)
+        elif request.method == 'PATCH':
+            data = request.get_json()
+            if data:
+                club_distance.club_id = data.get('club_id', club_distance.club_id)
+                club_distance.distance = data.get('distance', club_distance.distance)
+                db.session.commit()
+                return make_response(club_distance.to_dict(), 200)
+            else:
+                return make_response({'error': 'No data provided'}, 400)
+        elif request.method == 'DELETE':
+            db.session.delete(club_distance)
+            db.session.commit()
+            return make_response({'message': 'Club Distance deleted'}, 200)
+    else:
+        return make_response({'error': 'Club Distance not found'}, 404)
 
 @app.route('/users')
 def users():
@@ -161,43 +223,7 @@ api.add_resource(CheckSession, '/check_session')
 
 
 
-@app.route('/club_distance', methods=['GET', 'POST'])
-def club_distance():
-    if request.method == 'GET':
-        club_distances = ClubDistance.query.all()
-        club_distances_dict = [club_distance.to_dict( ) for club_distance in club_distances]
-        return make_response(club_distances_dict, 200)
-    elif request.method == 'POST':
-        data = request.get_json()
-        if data:
-            club_distance = ClubDistance(club_id=data.get('club_id'), distance=data.get('distance'))
-            db.session.add(club_distance)
-            db.session.commit()
-            return make_response(club_distance.to_dict(), 201)
-        else:
-            return make_response({'error': 'No data provided'}, 400)
 
-@app.route('/club_distance/<int:club_distance_id>', methods =['GET', 'PATCH', 'DELETE'])
-def club_distance_id(club_distance_id):
-    club_distance = ClubDistance.query.get(club_distance_id)
-    if club_distance:
-        if request.method == 'GET':
-            return make_response(club_distance.to_dict(rules = '',), 200)
-        elif request.method == 'PATCH':
-            data = request.get_json()
-            if data:
-                club_distance.club_id = data.get('club_id', club_distance.club_id)
-                club_distance.distance = data.get('distance', club_distance.distance)
-                db.session.commit()
-                return make_response(club_distance.to_dict(), 200)
-            else:
-                return make_response({'error': 'No data provided'}, 400)
-        elif request.method == 'DELETE':
-            db.session.delete(club_distance)
-            db.session.commit()
-            return make_response({'message': 'Club Distance deleted'}, 200)
-    else:
-        return make_response({'error': 'Club Distance not found'}, 404)
     
 
 # @app.route('/scorecard/', methods=['GET', 'POST'])
@@ -357,8 +383,6 @@ def scorecards_by_user(user_id):
     else:
        
         return make_response({'error': 'No scorecards found for the user'}, 404)
-# Able to Read,Edit,Delete scorecard byt userid by scorecardId
-from flask import Flask, request, jsonify, make_response
 
 @app.route('/scorecard/user/<int:user_id>/<int:scorecard_id>', methods=['GET', 'PATCH', 'DELETE'])
 def scorecard_operations(user_id, scorecard_id):
