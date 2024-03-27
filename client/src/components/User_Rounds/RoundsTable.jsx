@@ -50,6 +50,7 @@ const RoundsTable = () => {
   };
 
   return (
+    <div className="bg-gray-100">
     <div className="max-w-4xl mx-auto bg-green-800 p-6 rounded-lg shadow-lg">
       <h2 className="text-center text-2xl font-bold mb-4" style={{ color: '#f8fafc' }}>Past Rounds</h2>
       <div className="overflow-x-auto">
@@ -90,6 +91,7 @@ const RoundsTable = () => {
           </tbody>
         </table>
       </div>
+    </div>
     </div>
   );
 };
