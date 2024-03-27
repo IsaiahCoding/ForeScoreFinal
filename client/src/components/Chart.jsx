@@ -22,19 +22,21 @@ const ChartComponent = () => {
   });
 
   useEffect(() => {
-   
     const fetchScorecards = async () => {
       try {
         const response = await fetch(`/scorecard/user/${user.id}`);
         if (!response.ok) throw new Error('Failed to fetch scorecards');
-        const scorecards = await response.json();
-
+        let scorecards = await response.json();
+  
+        // Sort scorecards by date
+        scorecards = scorecards.sort((a, b) => new Date(a.date) - new Date(b.date));
+  
        
-        const categories = scorecards.map(scorecard => 
+        const categories = scorecards.map(scorecard =>
           new Date(scorecard.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
         );
         const scores = scorecards.map(scorecard => scorecard.total_user_score);
-
+  
         setChartData(prevData => ({
           ...prevData,
           series: [{ name: 'Score', data: scores }],
@@ -44,7 +46,7 @@ const ChartComponent = () => {
         console.error('Error fetching scorecards:', error);
       }
     };
-
+  
     if (user?.id) fetchScorecards();
   }, [user]);
 
