@@ -10,7 +10,7 @@ const ClubsTable = ({ clubs }) => {
       if (!response.ok) {
         throw new Error('Failed to delete club');
       }
-     
+      // Update state or re-fetch club data
     } catch (error) {
       console.error('Error deleting club:', error);
     }

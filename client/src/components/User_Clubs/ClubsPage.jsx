@@ -9,66 +9,37 @@ const ClubPage = () => {
   const [clubs, setClubs] = useState([]);
   const { user } = useAuth();
 
-  const fetchClubs = async () => {
+  useEffect(() => {
+    if (user) {
+      fetchUserClubs(user.id);
+    }
+  }, [user]);
+
+  const fetchUserClubs = async (userId) => {
     try {
-      const response = await fetch('/clubs');
+      const response = await fetch(`/clubs?user_id=${userId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch user clubs');
+      }
       const data = await response.json();
       setClubs(data);
     } catch (error) {
-      console.error('Error fetching clubs:', error);
+      console.error('Error fetching user clubs:', error);
     }
   };
 
-  useEffect(() => {
-    fetchClubs();
-  }, []);
-
-  const handleAddClub = async (newClub, distances) => {
-    try {
-      const clubResponse = await fetch('/clubs', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newClub),
-      });
-  
-      const clubData = await clubResponse.json();
-      const clubId = clubData.id;
-  
-      await fetch(`/clubs/${clubId}/distances`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(distances),
-      });
-  
-      fetchClubs();
-    } catch (error) {
-      console.error('Error adding club:', error);
-    }
+  const handleAddClub = (newClub) => {
+    setClubs([...clubs, newClub]);
   };
 
-  const handleAddDistance = async (clubId, distances) => {
-    try {
-      await fetch(`/clubs/${clubId}/distances`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(distances),
-      });
-      fetchClubs();
-    } catch (error) {
-      console.error('Error adding distances:', error);
-    }
+  const onCancelAddClub = () => {
+    console.log('Add club canceled');
   };
 
   return (
     <div className="container mx-auto px-4">
       <PageHeader />
-      <AddClubForm onSave={handleAddClub}  user={user} />
+      <AddClubForm onSave={handleAddClub} onCancel={onCancelAddClub} user={user} />
       <ClubsTable clubs={clubs} />
     </div>
   );

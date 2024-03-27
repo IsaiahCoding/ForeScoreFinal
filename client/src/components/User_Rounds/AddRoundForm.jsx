@@ -27,6 +27,7 @@ const AddRoundForm = ({ onSave, onCancel, user }) => {
         'Authorization': `Bearer ${user.token}`, 
       },
       body: JSON.stringify(dataToSend),
+      
     })
     .then(response => {
       if (!response.ok) {
@@ -36,6 +37,7 @@ const AddRoundForm = ({ onSave, onCancel, user }) => {
     })
     .then(data => {
       console.log('Success:', data);
+      window.location.reload();
       onSave(data); 
       setDate('');
       setCourse('');

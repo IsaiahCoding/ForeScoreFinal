@@ -3,21 +3,13 @@
 import React, { useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import { UserContext } from './UserContext/UserContext';
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Typography,
-  Input,
-  Checkbox,
-  Button,
-} from "@material-tailwind/react";
+import {Card,CardHeader,CardBody,CardFooter,Typography,Input,Checkbox,Button,} from "@material-tailwind/react";
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const history = useHistory();
+  const [errorMessage, setErrorMessage] = useState('');
   const { setUser } = useContext(UserContext); 
 
   const handleLogin = (e) => {
@@ -37,6 +29,7 @@ function Login() {
           history.push('/home');
         });
       } else {
+        setErrorMessage('Login failed. Please check your email and password.');
         console.error('Failed to login');
       }
     })
