@@ -44,7 +44,7 @@ function Signup() {
       if (data.user) {
         setUser(data.user);
         localStorage.setItem('token', data.token); 
-        history.push('/login'); 
+        history.push('/home'); 
       }
     })
     .catch(error => console.error('Error:', error));
