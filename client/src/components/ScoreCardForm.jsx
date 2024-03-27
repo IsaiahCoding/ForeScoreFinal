@@ -75,7 +75,7 @@ function GolfScoreCard() {
   }, [score]);
 
   return (
-    <div className="max-w-3xl mx-auto bg-green-500 bg-opacity-60 p-6 rounded-lg shadow-lg border border-green-600">
+    <div className="bg-gray-100 max-w-3xl mx-auto bg-green-500 bg-opacity-60 p-6 rounded-lg shadow-lg border border-green-600">
       <h2 className="text-center text-2xl font-bold mb-4 text-gray-700 border-gray-900 underline decoration-4">ForeScore: Golf Scorecard</h2>
       <form onSubmit={handleFormSubmit}>
         <div className="flex mb-4">
@@ -186,11 +186,11 @@ function GolfScoreCard() {
           <Button
             color="blue"
             buttonType="filled"
-            size="regular"
+            size="lg"
             rounded={true}
             block={false}
             iconOnly={false}
-            ripple="light"
+            ripple={true}
             onClick={handleFormSubmit}
           >
             Submit Scorecard

@@ -1,6 +1,8 @@
 import React, { useState, useContext } from 'react';
 import PageHeader from './PageHeader';
 import { UserContext } from '/Users/isaiahaguilera/Development/code/phase-5/Fore-Score-2/client/src/components/UserContext/UserContext.jsx';
+import { Button } from "@material-tailwind/react";
+
 
 const AddRoundForm = ({ onSave, onCancel, user }) => {
   const [date, setDate] = useState('');
@@ -10,7 +12,7 @@ const AddRoundForm = ({ onSave, onCancel, user }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Directly using 'user' prop passed down from Rounds component
+   
     const dataToSend = {
       user_id: user.id,
       date,
@@ -96,20 +98,33 @@ const AddRoundForm = ({ onSave, onCancel, user }) => {
         </div>
 
         <div className="flex items-center justify-between">
-          <button
-            type="submit"
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          >
-            Save
-          </button>
-          <button
-            type="button"
-            onClick={handleCancel}
-            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          >
-            Cancel
-          </button>
-        </div>
+            <Button
+              color="blue"
+              buttonType="filled"
+              size="lg"
+              rounded={true}
+              block={false}
+              iconOnly={false}
+              ripple={true}
+              type="submit"
+            >
+              Save
+            </Button>
+            <Button
+              color="red"
+              buttonType="filled"
+              size="lg"
+              rounded={true}
+              block={false}
+              iconOnly={false}
+              ripple={true}
+              onClick={handleCancel}
+              type="button"
+            >
+              Cancel
+            </Button>
+          </div>
+
       </form>
     </div>
   );
