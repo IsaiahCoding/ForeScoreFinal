@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { UserContext } from '/Users/isaiahaguilera/Development/code/phase-5/Fore-Score-2/client/src/components/UserContext/UserContext.jsx';
 import { Input, Button } from "@material-tailwind/react";
+import UserIcon from './UserIcon';
 function UpdateUserProfile() {
     const { user, setUser } = useContext(UserContext);
     const [currentPassword, setCurrentPassword] = useState(''); // State for current password
@@ -58,6 +59,7 @@ function UpdateUserProfile() {
     return (
         <div className="bg-gay-100">
         <div className="max-w-md mx-auto bg-green-500 bg-opacity-60 p-6 rounded-lg shadow-lg border border-green-600">
+            <UserIcon />
             <h2 className="text-center text-2xl font-bold mb-4 text-gray-700">Update Profile</h2>
             {error && <p className="text-red-500 text-xs italic">{error}</p>}
             {success && <p className="text-green-500 text-xs italic">{success}</p>}
