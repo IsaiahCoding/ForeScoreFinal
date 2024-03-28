@@ -12,6 +12,10 @@ ForeScore is a comprehensive web application designed to enhance your golfing ex
 
 
 # Project Screenshots
+![Welcome to Fore Score](https://github.com/IsaiahCoding/ForeScoreFinal/assets/82983831/f14e395d-d95a-42a4-b50c-d784fee8eb17)
+![Screenshot 2024-03-27 at 10 27 28 PM (2)](https://github.com/IsaiahCoding/ForeScoreFinal/assets/82983831/ef86b674-a0ae-4814-9ba1-a13f54a3d5e9)
+![Pasted Graphic 6](https://github.com/IsaiahCoding/ForeScoreFinal/assets/82983831/90c8ce84-e8ea-4474-9117-9034a6e1df2d)
+![Pasted Graphic 7](https://github.com/IsaiahCoding/ForeScoreFinal/assets/82983831/5fe8c201-16f2-47be-b1af-219486de8d57)
 
 
 
