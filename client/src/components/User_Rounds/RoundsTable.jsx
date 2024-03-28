@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import useAuth from '../UserAuth/UserAuth';
 import { useHistory } from 'react-router-dom'; 
 import { Button } from "@material-tailwind/react";
+import CalendarIcon from '../CalendarIcon';
 
 const RoundsTable = () => {
   const [rounds, setRounds] = useState([]);
@@ -50,6 +51,7 @@ const RoundsTable = () => {
   return (
     <div className="bg-gray-100">
       <div className="max-w-4xl mx-auto bg-green-500 bg-opacity-60 p-6 rounded-lg shadow-lg border border-green-600">
+      <CalendarIcon />
         <h2 className="text-center text-2xl font-bold mb-4 text-gray-700">ForeScore: Past Rounds</h2>
         <div className="overflow-x-auto">
           <table className="table-auto w-full">
